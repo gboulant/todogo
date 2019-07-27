@@ -4,10 +4,12 @@ basic features of the go langage. The resulting application can be
 used of course but could not fit your own way to manage todo list.
 
 The standard use cases are to create and list a personal todo
-list. For creating a new task to do::
+list. For creating a new task to do:
 
-  $ todo new -t "Write the documentation of todogo"
-   1 [2019-07-27]  todo: Write the documentation of todogo
+.. code-block:: shell
+   
+   $ todo new -t "Write the documentation of todogo"
+    1 [2019-07-27]  todo: Write the documentation of todogo
 
 The todo task is created with usage index 1. You may complete your
 todo list::
