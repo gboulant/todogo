@@ -40,7 +40,7 @@ func commandNote(cmdname string, args []string) error {
 
 func editNote(index uint64) error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 
 	task, err := db.Get(index)
 	if err != nil {
@@ -61,7 +61,8 @@ func editNote(index uint64) error {
 	if filepath.IsAbs(task.NotePath) {
 		notepath = task.NotePath
 	} else {
-		notepath = filepath.Join(filepath.Dir(data.JournalPath), task.NotePath)
+		rootdir := filepath.Dir(getconfig().GetActiveContext().JournalPath())
+		notepath = filepath.Join(rootdir, task.NotePath)
 	}
 
 	exists, err := core.PathExists(notepath)
@@ -92,7 +93,7 @@ func editNote(index uint64) error {
 
 func viewNote(index uint64) error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 
 	task, err := db.Get(index)
 	if err != nil {
@@ -107,7 +108,8 @@ func viewNote(index uint64) error {
 	if filepath.IsAbs(task.NotePath) {
 		notepath = task.NotePath
 	} else {
-		notepath = filepath.Join(filepath.Dir(data.JournalPath), task.NotePath)
+		rootdir := filepath.Dir(getconfig().GetActiveContext().JournalPath())
+		notepath = filepath.Join(rootdir, task.NotePath)
 	}
 
 	_, err = core.PathExists(notepath)

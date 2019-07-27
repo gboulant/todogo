@@ -1,11 +1,15 @@
 package core
 
+import "fmt"
+
 // -----------------------------------------------------------------
 // Definition of the jsonable interface
 
 type Jsonable interface {
 	Load(filepath string) error
-	Save(filepath string) error
+	File() string
+	Save() error
+	SaveTo(filepath string) error
 }
 
 const JsonPrefix string = ""
@@ -20,7 +24,7 @@ func Load(filepath string, container Jsonable) error {
 // Save writes the data of the jsonable container into a file. The
 // container should implements the Jsonable interface.
 func Save(filepath string, container Jsonable) error {
-	return container.Save(filepath)
+	return container.SaveTo(filepath)
 }
 
 // -----------------------------------------------------------------
@@ -28,12 +32,11 @@ func Save(filepath string, container Jsonable) error {
 
 type Stringable interface {
 	String() string
-	Println()
 }
 
 func String(data Stringable) string {
 	return data.String()
 }
 func Println(data Stringable) {
-	data.Println()
+	fmt.Println(data.String())
 }

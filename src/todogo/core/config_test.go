@@ -1,26 +1,60 @@
 package core
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
-func TestConfig(t *testing.T) {
-	config := Config{
-		ContextName: "toto",
-		ContextList: ContextArray{
-			Context{DirPath: "/tmp/toto", Name: "toto"},
-			Context{DirPath: "/tmp/tutu", Name: "tutu"},
-			Context{DirPath: "/tmp/titi", Name: "titi"},
-			Context{DirPath: "/tmp/tata", Name: "tata"},
-		},
-		Parameters: Parameters{
-			DefaultCommand: "board",
-		},
+func TestContexts(t *testing.T) {
+	contexts := ContextArray{
+		Context{DirPath: "/tmp/titi", Name: "titi"},
+		Context{DirPath: "/tmp/toto", Name: "toto"},
+		Context{DirPath: "/tmp/tutu", Name: "tutu"},
+		Context{DirPath: "/tmp/tata", Name: "tata"},
 	}
 
-	config.Save("/tmp/toto.json")
+	pcontext := contexts.GetContext("tutu")
+	if pcontext.DirPath != "/tmp/tutu" {
+		msg := fmt.Sprintf("DirPath is %s (should be %s)", pcontext.DirPath, "/tmp/tutu")
+		t.Error(msg)
+	}
+
+	pcontext.DirPath = "/my/path"
+	pcontext = contexts.GetContext("tutu")
+	if pcontext.DirPath != "/my/path" {
+		msg := fmt.Sprintf("DirPath is %s (should be %s)", pcontext.DirPath, "/my/path")
+		t.Error(msg)
+	}
+
+	contexts.Remove(contexts.IndexFromName("tutu"))
+	pcontext = contexts.GetContext("tutu")
+	if pcontext != nil {
+		msg := fmt.Sprintf("Context %s should not exist", "tutu")
+		t.Error(msg)
+	}
+
+	initlen := len(contexts)
+	context := Context{DirPath: "/tmp/yeye", Name: "yeye"}
+	contexts.Append(context)
+	if len(contexts) != initlen+1 {
+		msg := fmt.Sprintf("Contexts size is %d (should be %d)", len(contexts), initlen)
+		t.Error(msg)
+	}
+
+	pcontext = contexts.GetContext("yeye")
+	if pcontext.DirPath != "/tmp/yeye" {
+		msg := fmt.Sprintf("DirPath is %s (should be %s)", pcontext.DirPath, "/tmp/yeye")
+		t.Error(msg)
+	}
+}
+
+func TestConfig(t *testing.T) {
+	config := GetTestConfig()
+	config.SaveTo("/tmp/toto.json")
 
 	var otherConfig Config
 	otherConfig.Load("/tmp/toto.json")
-	dirpath := otherConfig.ContextList[1].DirPath
+	dirpath := otherConfig.ContextList.GetContext("tutu").DirPath
 	if dirpath != "/tmp/tutu" {
 		t.Errorf("dirpath is %s (should be %s)", dirpath, "/tmp/tutu")
 	}
@@ -30,24 +64,30 @@ func TestConfig(t *testing.T) {
 	}
 }
 
-func TestConfigHandler(t *testing.T) {
-	var handler ConfigHandler
-	err := handler.Load()
+func TestConfigIO(t *testing.T) {
+
+	config, err := GetConfig()
 	if err != nil {
 		t.Error(err)
 	}
 
-	context := Context{DirPath: "/tmp/toto", Name: "toto"}
-	handler.AddContext(&context)
-
-	pcontext, err := handler.GetContext("toto")
+	err = config.ContextList.Append(Context{DirPath: "/tmp/yeye", Name: "yeye"})
+	if err != nil {
+		t.Error(err)
+	}
+	err = config.Save()
 	if err != nil {
 		t.Error(err)
 	}
 
-	pcontext.DirPath = "/tmp/rototo"
-	pcontext, _ = handler.GetContext("toto")
-	if pcontext.DirPath != "/tmp/rototo" {
-		t.Errorf("dirpath is %s (should be %s)", pcontext.DirPath, "/tmp/rototo")
+	idx := config.ContextList.IndexFromName("yeye")
+	err = config.ContextList.Remove(idx)
+	if err != nil {
+		fmt.Println(err)
 	}
+	err = config.Save()
+	if err != nil {
+		t.Error(err)
+	}
+
 }

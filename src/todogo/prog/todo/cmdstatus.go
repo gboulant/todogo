@@ -42,7 +42,7 @@ func modifierPrevious(task *data.Task) error {
 
 func modifyStatus(indeces core.IndexList, modifier statusModifier) error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	for _, index := range indeces {
 		task, err := db.Get(index)
 		if err != nil {

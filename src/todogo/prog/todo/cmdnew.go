@@ -21,7 +21,7 @@ func commandNew(cmdname string, args []string) error {
 	}
 
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	task := db.New(text)
 	err := db.Commit()
 	if err != nil {

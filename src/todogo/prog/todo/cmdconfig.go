@@ -60,63 +60,61 @@ func commandConfig(cmdname string, args []string) error {
 }
 
 func listContexts() error {
-	var handler core.ConfigHandler
-	err := handler.Load()
-	if err != nil {
-		return err
-	}
-	handler.List()
+	fmt.Println(getconfig().String())
 	return nil
 }
 
 func createOrUptadeContext(name string, path string) error {
-	var handler core.ConfigHandler
-	err := handler.Load()
-	if err != nil {
-		return err
-	}
-
-	var pcontext *core.Context
-	pcontext, err = handler.GetContext(name)
-	if err != nil {
+	config := getconfig()
+	context := config.GetContext(name)
+	if context != nil {
+		// The context exists. To be updated
+		fmt.Printf("Updating the context %s with path %s\n", name, path)
+		context.DirPath = path
+	} else {
 		// The context does not exists. To be created
 		fmt.Printf("Creating the context %s with path %s\n", name, path)
 		context := core.Context{
 			Name:    name,
 			DirPath: path,
 		}
-		pcontext = &context
-		handler.AddContext(pcontext)
-	} else {
-		// The context exists. To be updated
-		fmt.Printf("Updating the context %s with path %s\n", name, path)
-		pcontext.DirPath = path
+		config.AddContext(context)
 	}
-	return handler.Save()
+	// This context become the default context (could be a user choice)
+	config.SetActiveContext(name)
+
+	err := config.Save()
+	if err == nil {
+		fmt.Println(config.String())
+	}
+	return err
 }
 
 func selectContext(name string) error {
-	var handler core.ConfigHandler
-	err := handler.Load()
-	if err != nil {
-		return err
+	config := getconfig()
+	context := config.GetContext(name)
+	if context == nil {
+		return fmt.Errorf("ERR: the context %s does not exist", name)
 	}
-	err = handler.SetActiveContext(name)
-	if err != nil {
-		return err
+	config.SetActiveContext(name)
+
+	err := config.Save()
+	if err == nil {
+		fmt.Println(config.String())
 	}
-	return handler.Save()
+	return err
 }
 
 func removeContext(name string) error {
-	var handler core.ConfigHandler
-	err := handler.Load()
+	config := getconfig()
+	err := config.RemoveContext(name)
 	if err != nil {
 		return err
 	}
-	err = handler.RemoveContext(name)
-	if err != nil {
-		return err
+
+	err = config.Save()
+	if err == nil {
+		fmt.Println(config.String())
 	}
-	return handler.Save()
+	return err
 }

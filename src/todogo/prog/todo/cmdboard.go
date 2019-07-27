@@ -43,14 +43,14 @@ func commandBoard(cmdname string, args []string) error {
 
 func listBoard() error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	db.ListWithFilter(data.TaskFilterOnBoard)
 	return nil
 }
 
 func clearBoard() error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	indeces := db.GetIndeces(data.TaskFilterOnBoard)
 	if len(indeces) == 0 {
 		return errors.New("WRN: Nothing to clear because there is no task on board")
@@ -69,7 +69,7 @@ func clearBoard() error {
 
 func addOnBoard(indeces core.IndexList) error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	for _, index := range indeces {
 		err := db.AddOnBoard(index)
 		if err != nil {
@@ -83,7 +83,7 @@ func addOnBoard(indeces core.IndexList) error {
 
 func removeFromBoard(indeces core.IndexList) error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	for _, index := range indeces {
 		err := db.RemoveFromBoard(index)
 		if err != nil {

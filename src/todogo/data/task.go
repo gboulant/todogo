@@ -33,7 +33,7 @@ func (task *Task) initGlobalIndex() {
 // InitNotePath initializes the NotePath with the default value
 func (task *Task) InitNotePath() {
 	basename := fmt.Sprintf("%d.rst", task.GIndex)
-	task.NotePath = filepath.Join("notes", basename)
+	task.NotePath = filepath.Join(core.NotebookDirname, basename)
 }
 
 // TaskArray is the data structure for a list (array) of Tasks
@@ -94,14 +94,22 @@ func (ta *TaskArray) Load(filepath string) error {
 	return json.Unmarshal(bytes, ta)
 }
 
-// Save writes the TaskArray data into a json file.
+// SaveTo writes the TaskArray data into a json file.
 // It implements the jsonable interface.
-func (ta *TaskArray) Save(filepath string) error {
+func (ta *TaskArray) SaveTo(filepath string) error {
 	bytes, err := json.MarshalIndent(*ta, core.JsonPrefix, core.JsonIndent)
 	if err != nil {
 		return err
 	}
 	return core.WriteBytes(filepath, bytes)
+}
+
+func (ta *TaskArray) File() string {
+	return ""
+}
+
+func (ta *TaskArray) Save() error {
+	return ta.SaveTo(ta.File())
 }
 
 // --------------------------------------------------------------
@@ -113,9 +121,4 @@ func (task Task) String() string {
 	template := "%2d [%s] %s : %s"
 	s := fmt.Sprintf(template, task.UIndex, dtlabel, task.Status.String(), task.Description)
 	return s
-}
-
-// Println implements the stringable interface
-func (task Task) Println() {
-	fmt.Println(task.String())
 }

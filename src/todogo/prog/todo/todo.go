@@ -19,6 +19,15 @@ var commands = core.CommandList{
 	{Name: "config", Description: "Manage de configuration", Parser: commandConfig},
 }
 
+func getconfig() *core.Config {
+	cfg, err := core.GetConfig()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return cfg
+}
+
 func main() {
 	app.Init("todo", commands)
 	err := app.ArgParse()

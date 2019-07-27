@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
 var cfgdirpath = filepath.Join(os.Getenv("HOME"), ".todogo")
@@ -17,12 +18,108 @@ type Context struct {
 	Name    string
 }
 
+const (
+	JournalFilename = "journal.json"
+	ArchiveFilename = "archive.json"
+	NotebookDirname = "notes"
+)
+
+// String implements the stringable interface for a Context
+func (context Context) String() string {
+	return fmt.Sprintf("%-8s: %s", context.Name, context.DirPath)
+}
+func (context Context) JournalPath() string {
+	return filepath.Join(context.DirPath, JournalFilename)
+}
+func (context Context) ArchivePath() string {
+	return filepath.Join(context.DirPath, ArchiveFilename)
+}
+func (context Context) NotesPath() string {
+	return filepath.Join(context.DirPath, NotebookDirname)
+}
+
 // ContextArray defines a list of Context workspaces
 type ContextArray []Context
 
-// ContextMap defines a map of Context workspaces whose key is the context name
-type ContextMap map[string]*Context
+// String implements the stringable interface for a Context
+func (contexts ContextArray) String() string {
+	s := ""
+	for i := 0; i < len(contexts); i++ {
+		s += fmt.Sprintf("%s\n", contexts[i].String())
+	}
+	return s
+}
 
+func (contexts *ContextArray) Remove(index int) error {
+	if index < 0 || index >= len(*contexts) {
+		return fmt.Errorf("ERR: index %d is out of range of contexts", index)
+	}
+	(*contexts)[index] = (*contexts)[len(*contexts)-1]
+	*contexts = (*contexts)[:len(*contexts)-1]
+	return nil
+}
+
+func (contexts *ContextArray) Append(context Context) error {
+	if contexts.GetContext(context.Name) != nil {
+		return fmt.Errorf("ERR: a context with name %s already exists", context.Name)
+	}
+	*contexts = append(*contexts, context)
+	return nil
+}
+
+func (contexts *ContextArray) SortByName() {
+	byName := func(i int, j int) bool {
+		return (*contexts)[i].Name < (*contexts)[j].Name
+	}
+	sort.Slice(*contexts, byName)
+}
+
+const noIndex = -1
+
+type filterFunction func(context Context) bool
+
+func (contexts ContextArray) index(filter filterFunction) int {
+	for i := 0; i < len(contexts); i++ {
+		if filter(contexts[i]) {
+			return i
+		}
+	}
+	return noIndex
+}
+
+func (contexts ContextArray) IndexFromName(name string) int {
+	filter := func(context Context) bool {
+		return context.Name == name
+	}
+	return contexts.index(filter)
+}
+
+func (contexts *ContextArray) GetContext(name string) *Context {
+	idx := contexts.IndexFromName(name)
+	if idx == noIndex {
+		return nil
+	}
+	return &(*contexts)[idx]
+}
+
+func GetTestConfig() Config {
+	config := Config{
+		ContextName: "toto",
+		ContextList: ContextArray{
+			Context{DirPath: "/tmp/toto", Name: "toto"},
+			Context{DirPath: "/tmp/tutu", Name: "tutu"},
+			Context{DirPath: "/tmp/titi", Name: "titi"},
+			Context{DirPath: "/tmp/tata", Name: "tata"},
+		},
+		Parameters: Parameters{
+			DefaultCommand: "board",
+		},
+	}
+	return config
+}
+
+// Parameters is a structure holding various configuration parameters in
+// addition to the list of working contexts
 type Parameters struct {
 	DefaultCommand string
 }
@@ -33,13 +130,18 @@ type Config struct {
 	ContextName string
 	ContextList ContextArray
 	Parameters  Parameters
+	filepath    string // WRN: no jsonified (on purpose) because starts with minus letter
 }
 
-func initDefaultConfig() Config {
+const defaultContextName = "default"
+
+var defaultContextPath = cfgdirpath
+
+func defaultConfig() Config {
 	config := Config{
-		ContextName: "default",
+		ContextName: defaultContextName,
 		ContextList: ContextArray{
-			{DirPath: cfgdirpath, Name: "default"},
+			{DirPath: defaultContextPath, Name: defaultContextName},
 		},
 		Parameters: Parameters{
 			DefaultCommand: "board",
@@ -48,152 +150,6 @@ func initDefaultConfig() Config {
 	return config
 }
 
-func contextArray2Map(contextarray ContextArray) ContextMap {
-	contextmap := make(ContextMap)
-	var pcontext *Context
-	for i := 0; i < len(contextarray); i++ {
-		pcontext = &contextarray[i]
-		contextmap[pcontext.Name] = pcontext
-	}
-	return contextmap
-}
-
-func contextMap2Array(contextmap ContextMap) ContextArray {
-	contextarray := make(ContextArray, len(contextmap))
-	icontext := 0
-	for _, v := range contextmap {
-		contextarray[icontext] = *(v)
-		icontext++
-	}
-	return contextarray
-}
-
-// --------------------------------------------------------------
-
-// ConfigHandler is a tool to manipulate the configuration (Load, Save, Edit)
-type ConfigHandler struct {
-	activeContextName string
-	contextMap        ContextMap
-}
-
-// Load reads the Config from the configuration file
-func (configHandler *ConfigHandler) Load() error {
-	exists, err := PathExists(cfgfilepath)
-	if exists && err != nil {
-		return err
-	}
-
-	var config Config
-	if !exists {
-		config = initDefaultConfig()
-		config.Save(cfgfilepath)
-	} else {
-		err = config.Load(cfgfilepath)
-		if err != nil {
-			return err
-		}
-	}
-	configHandler.activeContextName = config.ContextName
-	configHandler.contextMap = contextArray2Map(config.ContextList)
-	return nil
-}
-
-// getConfig retuns a copy of the current configuration
-func (configHandler ConfigHandler) getConfig() Config {
-	var config Config
-	config.ContextName = configHandler.activeContextName
-	config.ContextList = contextMap2Array(configHandler.contextMap)
-	return config
-}
-
-// List print the Config to the standard output
-func (configHandler ConfigHandler) List() {
-	config := configHandler.getConfig()
-	config.Println()
-}
-
-// Save writes the Config to the configuration file
-func (configHandler ConfigHandler) Save() error {
-	config := configHandler.getConfig()
-	return config.Save(cfgfilepath)
-}
-
-// AddContext adds the specified Context to the configuration
-func (configHandler *ConfigHandler) AddContext(pcontext *Context) error {
-	_, exists := configHandler.contextMap[pcontext.Name]
-	if exists {
-		msg := fmt.Sprintf("ERR: The context %s already exists", pcontext.Name)
-		return errors.New(msg)
-	}
-	configHandler.contextMap[pcontext.Name] = pcontext
-	return nil
-}
-
-// GetContext returns a pointer to the Context of the specified name
-func (configHandler *ConfigHandler) GetContext(contextName string) (*Context, error) {
-	pcontext, exists := configHandler.contextMap[contextName]
-	if !exists {
-		msg := fmt.Sprintf("ERR: The context %s does not exist", contextName)
-		return nil, errors.New(msg)
-	}
-	return pcontext, nil
-}
-
-// RemoveContext remove the specified Context from the configuration. It does
-// not delete the context workspace.
-func (configHandler *ConfigHandler) RemoveContext(contextName string) error {
-	if contextName == "default" {
-		return errors.New("The default context can not be removed")
-	}
-	pconfig, err := configHandler.GetContext(contextName)
-	if err != nil {
-		return err
-	}
-	delete(configHandler.contextMap, contextName)
-	fmt.Printf("The context %s has been removed from the configuration\n", pconfig.Name)
-	fmt.Printf("The workspace still exists in folder: %s\n", pconfig.DirPath)
-
-	// If the context was the active context, then we have to change the active
-	// context. Set to default
-	if pconfig.Name == configHandler.activeContextName {
-		fmt.Println("The active context is reset to default")
-		configHandler.activeContextName = "default"
-	}
-	return nil
-}
-
-// SetActiveContext defines the active context to the context whose name
-// is contextName. The specified context should be defined in the configuration,
-// otherwise an error is raised.
-func (configHandler *ConfigHandler) SetActiveContext(contextName string) error {
-	pcontext, err := configHandler.GetContext(contextName)
-	if err != nil {
-		return err
-	}
-	configHandler.activeContextName = contextName
-	fmt.Printf("The active context has been set to %s (%s)\n", contextName, pcontext.DirPath)
-	return nil
-}
-
-// GetActiveContext returns a pointer to the active Context
-func (configHandler *ConfigHandler) GetActiveContext() (*Context, error) {
-	return configHandler.GetContext(configHandler.activeContextName)
-}
-
-// GetActiveContextPath returns the path to the database of the default context
-func GetActiveContextPath() string {
-	var handler ConfigHandler
-	handler.Load()
-	pcontext, err := handler.GetActiveContext()
-	if err != nil {
-		panic(err)
-	}
-	return pcontext.DirPath
-}
-
-// --------------------------------------------------------------
-// Implementation of the Jsonable interface
-
 // Load reads a json file and map the data into a Config.
 // It implements the jsonable interface.
 func (config *Config) Load(filepath string) error {
@@ -201,31 +157,90 @@ func (config *Config) Load(filepath string) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(bytes, config)
+	err = json.Unmarshal(bytes, config)
+	if err != nil {
+		return err
+	}
+	config.filepath = filepath
+	return nil
 }
 
-// Save writes the Config data into a json file.
+// SaveTo writes the Config data into a json file.
 // It implements the jsonable interface.
-func (config *Config) Save(filepath string) error {
+func (config *Config) SaveTo(filepath string) error {
 	bytes, err := json.MarshalIndent(*config, JsonPrefix, JsonIndent)
 	if err != nil {
 		return err
 	}
-	return WriteBytes(filepath, bytes)
+	err = WriteBytes(filepath, bytes)
+	if err != nil {
+		return err
+	}
+	config.filepath = filepath
+	return nil
+}
+
+// File returns the source file (if Load was used)
+// It implements the jsonable interface.
+func (config *Config) File() string {
+	return config.filepath
+}
+
+func (config *Config) Save() error {
+	return config.SaveTo(config.File())
+}
+
+func (config *Config) AddContext(context Context) error {
+	return config.ContextList.Append(context)
+}
+
+func (config *Config) GetContext(name string) *Context {
+	return config.ContextList.GetContext(name)
+}
+
+func (config *Config) SetActiveContext(name string) error {
+	context := config.GetContext(name)
+	if context == nil {
+		return fmt.Errorf("ERR: The context %s does not exists", name)
+	}
+	config.ContextName = name
+	return nil
+}
+
+func (config *Config) GetActiveContext() *Context {
+	return config.ContextList.GetContext(config.ContextName)
+}
+
+func (config *Config) RemoveContext(name string) error {
+	if name == defaultContextName {
+		return errors.New("ERR: The default context can not be removed")
+	}
+	context := config.GetContext(name)
+	if context == nil {
+		return fmt.Errorf("ERR: The context %s does not exists", name)
+	}
+	dir := context.DirPath
+	idx := config.ContextList.IndexFromName(name)
+	err := config.ContextList.Remove(idx)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("The context %s has been removed from the configuration\n", name)
+	fmt.Printf("The workspace still exists in folder: %s\n", dir)
+
+	// If the context was the active context, then we have to change the active
+	// context. Reset to default
+	if name == config.ContextName {
+		fmt.Println("The active context is reset to default")
+		config.ContextName = defaultContextName
+	}
+	return nil
 }
 
 // --------------------------------------------------------------
 // Implementation of the Stringable interface
-
-// String implements the stringable interface for a Context
-func (context Context) String() string {
-	return fmt.Sprintf("%-8s: %s", context.Name, context.DirPath)
-}
-
-// Println implements the stringable interface
-func (context Context) Println() {
-	fmt.Println(context.String())
-}
 
 // PrettyPrint indicates wether the printable string should be pretty or plain text
 const PrettyPrint bool = true
@@ -237,11 +252,6 @@ func (config Config) String() string {
 	} else {
 		return config.PlainString()
 	}
-}
-
-// Println implements the stringable interface
-func (config Config) Println() {
-	fmt.Print(config.String())
 }
 
 // PlainString implements the stringable interface for a Config
@@ -272,4 +282,31 @@ func (config Config) PrettyString() string {
 	}
 	s += fmt.Sprintf("\nLegend: %s", ColorString(CharacterDisk+" active context\n", ColorMagenta))
 	return s
+}
+
+// =========================================================================
+
+var userConfig *Config
+
+func GetConfig() (*Config, error) {
+	if userConfig != nil {
+		return userConfig, nil
+	}
+	exists, err := PathExists(cfgfilepath)
+	if exists && err != nil {
+		return nil, err
+	}
+
+	var config Config
+	if !exists {
+		config = defaultConfig()
+		config.SaveTo(cfgfilepath)
+	} else {
+		err = config.Load(cfgfilepath)
+		if err != nil {
+			return nil, err
+		}
+	}
+	userConfig = &config
+	return userConfig, nil
 }

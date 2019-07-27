@@ -3,7 +3,6 @@ package data
 import (
 	"errors"
 	"fmt"
-	"path/filepath"
 	"strings"
 	"todogo/core"
 )
@@ -13,14 +12,6 @@ type Database struct {
 	taskmap  TaskMap
 	filepath string
 }
-
-var dbdirpath = core.GetActiveContextPath()
-
-// JournalPath points to the default journal task file
-var JournalPath = filepath.Join(dbdirpath, "journal.json")
-
-// ArchivePath points to the default archive task file
-var ArchivePath = filepath.Join(dbdirpath, "archive.json")
 
 // Init loads the data files and initialize the memory database
 func (db *Database) Init(taskFilePath string) error {

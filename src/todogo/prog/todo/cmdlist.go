@@ -15,7 +15,7 @@ func commandList(cmdname string, args []string) error {
 	flagset.Parse(args)
 
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	if board {
 		db.ListWithFilter(data.TaskFilterOnBoard)
 	} else {

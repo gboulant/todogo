@@ -33,7 +33,7 @@ func commandDelete(cmdname string, args []string) error {
 
 func deleteFromJournal(indeces core.IndexList) error {
 	var db data.Database
-	db.Init(data.JournalPath)
+	db.Init(getconfig().GetActiveContext().JournalPath())
 	for _, index := range indeces {
 		_, err := db.Delete(index)
 		if err != nil {

@@ -35,17 +35,17 @@ func commandArchive(cmdname string, args []string) error {
 
 func listArchive() error {
 	var dba data.Database
-	dba.Init(data.ArchivePath)
+	dba.Init(getconfig().GetActiveContext().ArchivePath())
 	dba.List()
 	return nil
 }
 
 func moveToArchive(indeces core.IndexList) error {
 	var dba data.Database
-	dba.Init(data.ArchivePath)
+	dba.Init(getconfig().GetActiveContext().ArchivePath())
 
 	var dbj data.Database
-	dbj.Init(data.JournalPath)
+	dbj.Init(getconfig().GetActiveContext().JournalPath())
 
 	for _, index := range indeces {
 		task, err := dbj.Delete(index)
@@ -70,10 +70,10 @@ func moveToArchive(indeces core.IndexList) error {
 
 func restoreFromArchive(indeces core.IndexList) error {
 	var dba data.Database
-	dba.Init(data.ArchivePath)
+	dba.Init(getconfig().GetActiveContext().ArchivePath())
 
 	var dbj data.Database
-	dbj.Init(data.JournalPath)
+	dbj.Init(getconfig().GetActiveContext().JournalPath())
 
 	for _, index := range indeces {
 		task, err := dba.Delete(index)
