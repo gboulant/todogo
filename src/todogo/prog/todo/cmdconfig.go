@@ -36,11 +36,11 @@ func commandConfig(cmdname string, args []string) error {
 
 	if newName != "" {
 		if path == "" {
-			msg := fmt.Sprintf("ERR: a path should be specified using the -p option")
-			return errors.New(msg)
-		} else {
-			return createOrUptadeContext(newName, path)
+			path = core.DefaultContextPath(newName)
+			msg := fmt.Sprintf("WRN: You did't specify the context path. Default to %s", path)
+			fmt.Println(msg)
 		}
+		return createOrUptadeContext(newName, path)
 	}
 
 	if selectName != "" {

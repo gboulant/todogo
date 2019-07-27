@@ -135,13 +135,20 @@ type Config struct {
 
 const defaultContextName = "default"
 
-var defaultContextPath = cfgdirpath
+// DefaultContextPath returns a default path for this context name
+func DefaultContextPath(name string) string {
+	return filepath.Join(cfgdirpath, name)
+}
 
 func defaultConfig() Config {
+
 	config := Config{
 		ContextName: defaultContextName,
 		ContextList: ContextArray{
-			{DirPath: defaultContextPath, Name: defaultContextName},
+			{
+				DirPath: DefaultContextPath(defaultContextName),
+				Name:    defaultContextName,
+			},
 		},
 		Parameters: Parameters{
 			DefaultCommand: "board",
