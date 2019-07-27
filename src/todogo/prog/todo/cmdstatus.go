@@ -37,7 +37,7 @@ func modifierNext(task *data.Task) error {
 }
 
 func modifierPrevious(task *data.Task) error {
-	return task.Status.Next()
+	return task.Status.Previous()
 }
 
 func modifyStatus(indeces core.IndexList, modifier statusModifier) error {
