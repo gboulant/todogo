@@ -1,5 +1,5 @@
 GOPATH=$(shell echo $$GOPATH:`pwd`)
-PREFIX ?= ${HOME}/programs/local/bin
+PREFIX ?= /usr/local
 
 all: install
 
@@ -11,7 +11,7 @@ install:
 	GOPATH=${GOPATH} go install todogo/prog/todo
 
 deploy: install
-	install ./bin/todo ${PREFIX}
+	install ./bin/todo ${PREFIX}/bin/.
 
 test:
 	@echo "=== Testing the package todogo/core ..."
