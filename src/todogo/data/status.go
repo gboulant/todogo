@@ -3,6 +3,7 @@ package data
 import (
 	"errors"
 	"fmt"
+	"todogo/conf"
 	"todogo/core"
 )
 
@@ -55,7 +56,7 @@ func (status *TaskStatus) Value(label string) error {
 }
 
 func (status TaskStatus) String() string {
-	if core.PrettyPrint {
+	if conf.PrettyPrint {
 		return status.prettyString()
 	} else {
 		return status.symbolString()
@@ -71,7 +72,7 @@ func (status TaskStatus) symbolString() string {
 }
 
 func (status TaskStatus) legend() string {
-	if core.PrettyPrint {
+	if conf.PrettyPrint {
 		return status.prettyLegend()
 	} else {
 		return status.symbolLegend()

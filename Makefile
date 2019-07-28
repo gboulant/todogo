@@ -18,6 +18,8 @@ deploy: install
 test:
 	@echo "=== Testing the package todogo/core ..."
 	@GOPATH=${GOPATH} go test -v todogo/core
+	@echo "=== Testing the package todogo/conf ..."
+	@GOPATH=${GOPATH} go test -v todogo/conf
 	@echo "=== Testing the package todogo/data ..."
 	@GOPATH=${GOPATH} go test -v todogo/data
 

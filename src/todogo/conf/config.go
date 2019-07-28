@@ -1,4 +1,4 @@
-package core
+package conf
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"todogo/core"
 )
 
 const (
@@ -174,7 +175,7 @@ func defaultConfig() Config {
 // Load reads a json file and map the data into a Config.
 // It implements the jsonable interface.
 func (config *Config) Load(filepath string) error {
-	bytes, err := LoadBytes(filepath)
+	bytes, err := core.LoadBytes(filepath)
 	if err != nil {
 		return err
 	}
@@ -189,11 +190,11 @@ func (config *Config) Load(filepath string) error {
 // SaveTo writes the Config data into a json file.
 // It implements the jsonable interface.
 func (config *Config) SaveTo(filepath string) error {
-	bytes, err := json.MarshalIndent(*config, JsonPrefix, JsonIndent)
+	bytes, err := json.MarshalIndent(*config, core.JsonPrefix, core.JsonIndent)
 	if err != nil {
 		return err
 	}
-	err = WriteBytes(filepath, bytes)
+	err = core.WriteBytes(filepath, bytes)
 	if err != nil {
 		return err
 	}
@@ -297,12 +298,12 @@ func (config Config) PrettyString() string {
 	for i := 0; i < len(config.ContextList); i++ {
 		context := config.ContextList[i]
 		if context.Name == config.ContextName {
-			s += fmt.Sprintf("%s\n", ColorString(CharacterDisk+" "+context.String(), ColorMagenta))
+			s += fmt.Sprintf("%s\n", core.ColorString(core.CharacterDisk+" "+context.String(), core.ColorMagenta))
 		} else {
 			s += fmt.Sprintf("  %s\n", context.String())
 		}
 	}
-	s += fmt.Sprintf("\nLegend: %s", ColorString(CharacterDisk+" active context\n", ColorMagenta))
+	s += fmt.Sprintf("\nLegend: %s", core.ColorString(core.CharacterDisk+" active context\n", core.ColorMagenta))
 	return s
 }
 
@@ -313,7 +314,7 @@ func GetConfig() (*Config, error) {
 	if userConfig != nil {
 		return userConfig, nil
 	}
-	exists, err := PathExists(cfgfilepath)
+	exists, err := core.PathExists(cfgfilepath)
 	if exists && err != nil {
 		return nil, err
 	}

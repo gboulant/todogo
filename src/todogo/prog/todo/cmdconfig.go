@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"todogo/core"
+	"todogo/conf"
 )
 
 // commandConfig is the arguments parser of the command config
@@ -36,7 +36,7 @@ func commandConfig(cmdname string, args []string) error {
 
 	if newName != "" {
 		if path == "" {
-			path = core.DefaultContextPath(newName)
+			path = conf.DefaultContextPath(newName)
 			msg := fmt.Sprintf("WRN: You did't specify the context path. Default to %s", path)
 			fmt.Println(msg)
 		}
@@ -60,7 +60,7 @@ func commandConfig(cmdname string, args []string) error {
 }
 
 func listContexts() error {
-	config, err := core.GetConfig()
+	config, err := conf.GetConfig()
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func listContexts() error {
 }
 
 func createOrUptadeContext(name string, path string) error {
-	config, err := core.GetConfig()
+	config, err := conf.GetConfig()
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func createOrUptadeContext(name string, path string) error {
 	} else {
 		// The context does not exists. To be created
 		fmt.Printf("Creating the context %s with path %s\n", name, path)
-		context := core.Context{
+		context := conf.Context{
 			Name:    name,
 			DirPath: path,
 		}
@@ -98,7 +98,7 @@ func createOrUptadeContext(name string, path string) error {
 }
 
 func selectContext(name string) error {
-	config, err := core.GetConfig()
+	config, err := conf.GetConfig()
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func selectContext(name string) error {
 }
 
 func removeContext(name string) error {
-	config, err := core.GetConfig()
+	config, err := conf.GetConfig()
 	if err != nil {
 		return err
 	}

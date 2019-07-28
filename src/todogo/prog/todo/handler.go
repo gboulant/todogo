@@ -1,7 +1,7 @@
 package main
 
 import (
-	"todogo/core"
+	"todogo/conf"
 	"todogo/data"
 )
 
@@ -23,7 +23,7 @@ func getActiveJournal() (*data.TaskJournal, error) {
 	if activeJournal != nil {
 		return activeJournal, nil
 	}
-	cfg, err := core.GetConfig()
+	cfg, err := conf.GetConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func getActiveArchive() (*data.TaskJournal, error) {
 	if activeArchive != nil {
 		return activeArchive, nil
 	}
-	cfg, err := core.GetConfig()
+	cfg, err := conf.GetConfig()
 	if err != nil {
 		return nil, err
 	}
