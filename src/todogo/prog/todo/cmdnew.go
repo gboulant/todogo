@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"todogo/core"
-	"todogo/data"
 )
 
 // commandNew is the arguments command of the command new
@@ -20,10 +19,13 @@ func commandNew(cmdname string, args []string) error {
 		return errors.New("ERR: The text should be specified")
 	}
 
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-	task := db.New(text)
-	err := db.Commit()
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
+
+	task := journal.New(text)
+	err = journal.Save()
 	if err != nil {
 		return err
 	}

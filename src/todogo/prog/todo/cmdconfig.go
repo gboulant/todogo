@@ -60,12 +60,19 @@ func commandConfig(cmdname string, args []string) error {
 }
 
 func listContexts() error {
-	fmt.Println(getconfig().String())
+	config, err := core.GetConfig()
+	if err != nil {
+		return err
+	}
+	fmt.Println(config.String())
 	return nil
 }
 
 func createOrUptadeContext(name string, path string) error {
-	config := getconfig()
+	config, err := core.GetConfig()
+	if err != nil {
+		return err
+	}
 	context := config.GetContext(name)
 	if context != nil {
 		// The context exists. To be updated
@@ -83,7 +90,7 @@ func createOrUptadeContext(name string, path string) error {
 	// This context become the default context (could be a user choice)
 	config.SetActiveContext(name)
 
-	err := config.Save()
+	err = config.Save()
 	if err == nil {
 		fmt.Println(config.String())
 	}
@@ -91,14 +98,17 @@ func createOrUptadeContext(name string, path string) error {
 }
 
 func selectContext(name string) error {
-	config := getconfig()
+	config, err := core.GetConfig()
+	if err != nil {
+		return err
+	}
 	context := config.GetContext(name)
 	if context == nil {
 		return fmt.Errorf("ERR: the context %s does not exist", name)
 	}
 	config.SetActiveContext(name)
 
-	err := config.Save()
+	err = config.Save()
 	if err == nil {
 		fmt.Println(config.String())
 	}
@@ -106,8 +116,11 @@ func selectContext(name string) error {
 }
 
 func removeContext(name string) error {
-	config := getconfig()
-	err := config.RemoveContext(name)
+	config, err := core.GetConfig()
+	if err != nil {
+		return err
+	}
+	err = config.RemoveContext(name)
 	if err != nil {
 		return err
 	}

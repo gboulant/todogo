@@ -41,22 +41,23 @@ func modifierPrevious(task *data.Task) error {
 }
 
 func modifyStatus(indeces core.IndexList, modifier statusModifier) error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
 	for _, index := range indeces {
-		task, err := db.Get(index)
+		task, err := journal.TaskList.GetTask(index)
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			err = modifier(&task)
+			err = modifier(task)
 			if err != nil {
 				msg := fmt.Sprintf("WRN: the status of the task %d can not be changed (%s)", index, err)
 				fmt.Println(msg)
 			} else {
-				db.Set(index, task)
-				core.Println(task)
+				fmt.Println(task.String())
 			}
 		}
 	}
-	return db.Commit()
+	return journal.Save()
 }

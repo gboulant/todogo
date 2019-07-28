@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"todogo/data"
 )
 
@@ -14,12 +15,17 @@ func commandList(cmdname string, args []string) error {
 
 	flagset.Parse(args)
 
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-	if board {
-		db.ListWithFilter(data.TaskFilterOnBoard)
-	} else {
-		db.List()
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
 	}
+
+	var listing string
+	if board {
+		listing = journal.ListWithFilter(data.TaskFilterOnBoard)
+	} else {
+		listing = journal.List()
+	}
+	fmt.Println(listing)
 	return nil
 }

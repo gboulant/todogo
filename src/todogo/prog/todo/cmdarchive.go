@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"todogo/core"
-	"todogo/data"
 )
 
 // commandArchive is the arguments parser of the command archive
@@ -34,26 +33,32 @@ func commandArchive(cmdname string, args []string) error {
 }
 
 func listArchive() error {
-	var dba data.Database
-	dba.Init(getconfig().GetActiveContext().ArchivePath())
-	dba.List()
+	archive, err := getActiveArchive()
+	if err != nil {
+		return err
+	}
+	fmt.Println(archive.List())
 	return nil
 }
 
 func moveToArchive(indeces core.IndexList) error {
-	var dba data.Database
-	dba.Init(getconfig().GetActiveContext().ArchivePath())
+	archive, err := getActiveArchive()
+	if err != nil {
+		return err
+	}
 
-	var dbj data.Database
-	dbj.Init(getconfig().GetActiveContext().JournalPath())
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
 
 	for _, index := range indeces {
-		task, err := dbj.Delete(index)
+		task, err := journal.Delete(index)
 		if err != nil {
 			fmt.Println(err)
 		} else {
 			task.UIndex = task.GIndex
-			err = dba.Add(task)
+			err = archive.Add(task)
 			if err != nil {
 				fmt.Println(err)
 			} else {
@@ -61,27 +66,31 @@ func moveToArchive(indeces core.IndexList) error {
 			}
 		}
 	}
-	err := dba.Commit()
+	err = archive.Save()
 	if err != nil {
 		return err
 	}
-	return dbj.Commit()
+	return journal.Save()
 }
 
 func restoreFromArchive(indeces core.IndexList) error {
-	var dba data.Database
-	dba.Init(getconfig().GetActiveContext().ArchivePath())
+	archive, err := getActiveArchive()
+	if err != nil {
+		return err
+	}
 
-	var dbj data.Database
-	dbj.Init(getconfig().GetActiveContext().JournalPath())
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
 
 	for _, index := range indeces {
-		task, err := dba.Delete(index)
+		task, err := archive.Delete(index)
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			task.UIndex = dbj.FreeUsageIndex()
-			err = dbj.Add(task)
+			task.UIndex = journal.GetFreeUID()
+			err = journal.Add(task)
 			if err != nil {
 				fmt.Println(err)
 			} else {
@@ -89,10 +98,9 @@ func restoreFromArchive(indeces core.IndexList) error {
 			}
 		}
 	}
-
-	err := dba.Commit()
+	err = archive.Save()
 	if err != nil {
 		return err
 	}
-	return dbj.Commit()
+	return journal.Save()
 }

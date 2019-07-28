@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"todogo/core"
-	"todogo/data"
 )
 
 // commandNote is the arguments parser of the command note
@@ -39,29 +38,23 @@ func commandNote(cmdname string, args []string) error {
 }
 
 func editNote(index uint64) error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-
-	task, err := db.Get(index)
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
+	task, err := journal.GetTask(index)
 	if err != nil {
 		return err
 	}
 	if task.NotePath == "" {
 		task.InitNotePath()
-		err = db.Set(index, task)
-		if err == nil {
-			err = db.Commit()
-		}
-		if err != nil {
-			return err
-		}
 	}
 
 	var notepath string
 	if filepath.IsAbs(task.NotePath) {
 		notepath = task.NotePath
 	} else {
-		rootdir := filepath.Dir(getconfig().GetActiveContext().JournalPath())
+		rootdir := filepath.Dir(journal.File())
 		notepath = filepath.Join(rootdir, task.NotePath)
 	}
 
@@ -88,27 +81,28 @@ func editNote(index uint64) error {
 	}
 
 	fmt.Printf("The note of the task %d can be edited in file: %s\n", index, notepath)
-	return nil
+	return journal.Save()
 }
 
 func viewNote(index uint64) error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-
-	task, err := db.Get(index)
+	journal, err := getActiveJournal()
 	if err != nil {
 		return err
 	}
+	task, err := journal.GetTask(index)
+	if err != nil {
+		return err
+	}
+
 	if task.NotePath == "" {
-		msg := fmt.Sprintf("ERR: the task %d has no associated note", index)
-		return errors.New(msg)
+		return fmt.Errorf("ERR: the task %d has no associated note", index)
 	}
 
 	var notepath string
 	if filepath.IsAbs(task.NotePath) {
 		notepath = task.NotePath
 	} else {
-		rootdir := filepath.Dir(getconfig().GetActiveContext().JournalPath())
+		rootdir := filepath.Dir(journal.File())
 		notepath = filepath.Join(rootdir, task.NotePath)
 	}
 

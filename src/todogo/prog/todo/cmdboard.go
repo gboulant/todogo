@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"todogo/core"
@@ -42,55 +41,62 @@ func commandBoard(cmdname string, args []string) error {
 }
 
 func listBoard() error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-	db.ListWithFilter(data.TaskFilterOnBoard)
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
+	listing := journal.ListWithFilter(data.TaskFilterOnBoard)
+	fmt.Println(listing)
 	return nil
 }
 
 func clearBoard() error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-	indeces := db.GetIndeces(data.TaskFilterOnBoard)
-	if len(indeces) == 0 {
-		return errors.New("WRN: Nothing to clear because there is no task on board")
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
 	}
-
-	for _, index := range indeces {
-		err := db.RemoveFromBoard(index)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Printf("Task of index %d has been removed from board\n", index)
-		}
+	tasksOnBoard := journal.TaskList.GetTasksWithFilter(data.TaskFilterOnBoard)
+	for i := 0; i < len(tasksOnBoard); i++ {
+		tasksOnBoard[i].OnBoard = false
 	}
-	return db.Commit()
+	err = journal.Save()
+	if err != nil {
+		return err
+	}
+	for i := 0; i < len(tasksOnBoard); i++ {
+		fmt.Printf("The task of index %d has been removed from board\n", tasksOnBoard[i].UIndex)
+	}
+	return nil
 }
 
 func addOnBoard(indeces core.IndexList) error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-	for _, index := range indeces {
-		err := db.AddOnBoard(index)
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
+	for _, uindex := range indeces {
+		err := journal.AddOnBoard(uindex)
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			fmt.Printf("Task of index %d has been added on board\n", index)
+			fmt.Printf("Task of index %d has been added on board\n", uindex)
 		}
 	}
-	return db.Commit()
+	return journal.Save()
 }
 
 func removeFromBoard(indeces core.IndexList) error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
-	for _, index := range indeces {
-		err := db.RemoveFromBoard(index)
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
+	for _, uindex := range indeces {
+		err := journal.RemoveFromBoard(uindex)
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			fmt.Printf("Task of index %d has been removed from board\n", index)
+			fmt.Printf("Task of index %d has been removed from board\n", uindex)
 		}
 	}
-	return db.Commit()
+	return journal.Save()
 }

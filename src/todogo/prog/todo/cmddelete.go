@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"todogo/core"
-	"todogo/data"
 )
 
 // commandDelete is the arguments parser of the command delete
@@ -32,15 +31,17 @@ func commandDelete(cmdname string, args []string) error {
 }
 
 func deleteFromJournal(indeces core.IndexList) error {
-	var db data.Database
-	db.Init(getconfig().GetActiveContext().JournalPath())
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
 	for _, index := range indeces {
-		_, err := db.Delete(index)
+		_, err := journal.Delete(index)
 		if err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Printf("Task of index %d has been deleted\n", index)
 		}
 	}
-	return db.Commit()
+	return journal.Save()
 }

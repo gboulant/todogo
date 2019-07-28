@@ -91,7 +91,8 @@ func (tasks *TaskArray) Remove(index int) error {
 
 // Append adds the task to the array. Returns an error if a task with same uid exists
 func (tasks *TaskArray) Append(task Task) error {
-	if tasks.GetTask(task.UIndex) != nil {
+	ptask, err := tasks.GetTask(task.UIndex)
+	if ptask != nil && err == nil {
 		return fmt.Errorf("ERR: a task with UID %d already exists", task.UIndex)
 	}
 	*tasks = append(*tasks, task)
@@ -109,8 +110,18 @@ func (tasks TaskArray) index(filter filterFunction) int {
 	return noIndex
 }
 
+func (tasks TaskArray) indeces(filter filterFunction) []int {
+	results := make([]int, 0, len(tasks))
+	for i := 0; i < len(tasks); i++ {
+		if filter(tasks[i]) {
+			results = append(results, i)
+		}
+	}
+	return results
+}
+
 // IndexFromUID returns the array index of the task with the given UID
-func (tasks TaskArray) IndexFromUID(uindex uint64) int {
+func (tasks TaskArray) indexFromUID(uindex uint64) int {
 	filterUID := func(task Task) bool {
 		return task.UIndex == uindex
 	}
@@ -118,12 +129,24 @@ func (tasks TaskArray) IndexFromUID(uindex uint64) int {
 }
 
 // GetTask returns a pointer to the task of the sepcified UID
-func (tasks *TaskArray) GetTask(uindex uint64) *Task {
-	idx := tasks.IndexFromUID(uindex)
+func (tasks *TaskArray) GetTask(uindex uint64) (*Task, error) {
+	idx := tasks.indexFromUID(uindex)
 	if idx == noIndex {
-		return nil
+		err := fmt.Errorf("The task of index %d does not exist", uindex)
+		return nil, err
 	}
-	return &(*tasks)[idx]
+	return &(*tasks)[idx], nil
+}
+
+// GetTasksWithFilter returns an array of pointer to the tasks that satisfy the filter
+func (tasks TaskArray) GetTasksWithFilter(filter filterFunction) []*Task {
+	results := make([]*Task, 0, len(tasks))
+	idxlist := tasks.indeces(filter)
+	for i := 0; i < len(idxlist); i++ {
+		idx := idxlist[i]
+		results = append(results, &tasks[idx])
+	}
+	return results
 }
 
 func (tasks TaskArray) byUID(i int, j int) bool {
@@ -148,35 +171,25 @@ func (tasks *TaskArray) SortByTimestamp() {
 	sort.Slice(*tasks, tasks.byTimestamp)
 }
 
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// WARNING: TO BE DELETE
-
-func (ta *TaskArray) Load(filepath string) error {
-	bytes, err := core.LoadBytes(filepath)
-	if err != nil {
-		return err
+// getFreeUID() returns the first free UID of this tasks list.
+func (tasks TaskArray) getFreeUID() uint64 {
+	// The free index is determined with the hypothesis that the indeces array
+	// is a list of consecutive integer indeces. If the difference between two
+	// consecutif indeces is not 1, then it means that there is at least a free
+	// index (the index that follows the smallest index of the difference).
+	tasks.SortByUID()
+	if len(tasks) == 0 {
+		return 1
 	}
-	return json.Unmarshal(bytes, ta)
-}
-
-// It implements the jsonable interface.
-func (ta *TaskArray) SaveTo(filepath string) error {
-	bytes, err := json.MarshalIndent(*ta, core.JsonPrefix, core.JsonIndent)
-	if err != nil {
-		return err
+	var freeUID uint64 = 1
+	for i := 0; i < len(tasks); i++ {
+		if tasks[i].UIndex-freeUID > 0 {
+			return freeUID
+		}
+		freeUID = tasks[i].UIndex + 1
 	}
-	return core.WriteBytes(filepath, bytes)
+	return freeUID
 }
-
-func (ta *TaskArray) File() string {
-	return ""
-}
-
-func (ta *TaskArray) Save() error {
-	return ta.SaveTo(ta.File())
-}
-
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 // =========================================================================
 // Implementation of a tasks journal (with file persistence)
@@ -189,8 +202,46 @@ type TaskJournal struct {
 	filepath string
 }
 
-// Load reads a journal of tasks from the given file.
-//It implements the jsonable interface.
+// New creates a new task in the database
+func (journal *TaskJournal) New(text string) *Task {
+	uindex := journal.TaskList.getFreeUID()
+	var task = Task{
+		UIndex:      uindex,
+		Description: text,
+		Timestamp:   timestamp(),
+		Status:      StatusTodo,
+		OnBoard:     false,
+	}
+	task.initGlobalIndex()
+	journal.TaskList.Append(task)
+	return &task
+}
+
+// Delete removes the task with the specified id. Returns a copy of the deleted
+// task on success
+func (journal *TaskJournal) Delete(uindex uint64) (Task, error) {
+	var task Task
+	index := journal.TaskList.indexFromUID(uindex)
+	if index == noIndex {
+		return task, fmt.Errorf("ERR: The task %d does not exist", uindex)
+	}
+	task = journal.TaskList[index]
+	err := journal.TaskList.Remove(index)
+	return task, err
+}
+
+func (journal TaskJournal) GetTask(uindex uint64) (*Task, error) {
+	return journal.TaskList.GetTask(uindex)
+}
+
+func (journal TaskJournal) GetFreeUID() uint64 {
+	return journal.TaskList.getFreeUID()
+}
+
+// Load reads a journal of tasks from the given file. Returns an error if the
+// file does not exist. Use LoadOrCreate to make sure to initialise a joournal
+// whatever the starting situation (inn the case of the first usage of todo for
+// example). It implements the jsonable interface.
 func (journal *TaskJournal) Load(filepath string) error {
 	bytes, err := core.LoadBytes(filepath)
 	if err != nil {
@@ -202,6 +253,30 @@ func (journal *TaskJournal) Load(filepath string) error {
 	}
 	return err
 
+}
+
+func (journal *TaskJournal) Add(task Task) error {
+	return journal.TaskList.Append(task)
+}
+
+// LoadOrCreate tries to load a journal from the given file, and create a void
+// journal if the file does not exist.
+func (journal *TaskJournal) LoadOrCreate(filepath string) error {
+	exists, err := core.PathExists(filepath)
+	if exists && err != nil {
+		return err
+	}
+
+	if !exists {
+		journal.TaskList = make(TaskArray, 0)
+	} else {
+		err = journal.Load(filepath)
+		if err != nil {
+			return err
+		}
+	}
+	journal.filepath = filepath
+	return nil
 }
 
 // SaveTo writes the journal data to the given file.
@@ -253,6 +328,26 @@ func (journal TaskJournal) List() string {
 
 func (journal TaskJournal) String() string {
 	return journal.List()
+}
+
+// AddOnBoard adds the specified task on board
+func (journal *TaskJournal) AddOnBoard(uindex uint64) error {
+	task, err := journal.TaskList.GetTask(uindex)
+	if err != nil {
+		return err
+	}
+	task.OnBoard = true
+	return nil
+}
+
+// RemoveFromBoard removes the specified task from board
+func (journal *TaskJournal) RemoveFromBoard(uindex uint64) error {
+	task, err := journal.TaskList.GetTask(uindex)
+	if err != nil {
+		return err
+	}
+	task.OnBoard = false
+	return nil
 }
 
 func CreateTestJournal() TaskJournal {
@@ -327,9 +422,3 @@ func taskMap2Array(taskmap TaskMap) TaskArray {
 	}
 	return taskarray
 }
-
-// --------------------------------------------------------------
-// Implementation of the Jsonable interface
-
-// --------------------------------------------------------------
-// Implementation of the Stringable interface
