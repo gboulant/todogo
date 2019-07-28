@@ -8,6 +8,9 @@ import (
 	"todogo/core"
 )
 
+// =========================================================================
+// Implementation of the Task concept
+
 // Task is the data structure for a single task
 type Task struct {
 	UIndex      uint64     // Usage Index (could be recycled)
@@ -36,8 +39,170 @@ func (task *Task) InitNotePath() {
 	task.NotePath = filepath.Join(core.NotebookDirname, basename)
 }
 
+// String implements the stringable interface
+func (task Task) String() string {
+	dtlabel := datelabel(task.Timestamp)
+	template := "%2d [%s] %s : %s"
+	s := fmt.Sprintf(template, task.UIndex, dtlabel, task.Status.String(), task.Description)
+	return s
+}
+
+// CreateTestTask creates a dummy task for test purposes
+func CreateTestTask(uindex int, text string) Task {
+	var task = Task{
+		UIndex:      uint64(uindex),
+		Description: text,
+		Timestamp:   timestamp(),
+		Status:      StatusTodo,
+		OnBoard:     false,
+	}
+	task.initGlobalIndex()
+	return task
+}
+
+// =========================================================================
+// Implementation of the collection of Tasks TaskArray
+
 // TaskArray is the data structure for a list (array) of Tasks
 type TaskArray []Task
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// WARNING: TO BE DELETE
+
+func (ta *TaskArray) Load(filepath string) error {
+	bytes, err := core.LoadBytes(filepath)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(bytes, ta)
+}
+
+// It implements the jsonable interface.
+func (ta *TaskArray) SaveTo(filepath string) error {
+	bytes, err := json.MarshalIndent(*ta, core.JsonPrefix, core.JsonIndent)
+	if err != nil {
+		return err
+	}
+	return core.WriteBytes(filepath, bytes)
+}
+
+func (ta *TaskArray) File() string {
+	return ""
+}
+
+func (ta *TaskArray) Save() error {
+	return ta.SaveTo(ta.File())
+}
+
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// =========================================================================
+// Implementation of a tasks journal (with file persistence)
+
+// TaskJournal defines the structure to manage a task journal. A tasks journal
+// could be the current collection of tasks (called journal) or the archive
+// collection of tasks (called archive).
+type TaskJournal struct {
+	TaskList TaskArray
+	filepath string
+}
+
+// Load reads a journal of tasks from the given file.
+//It implements the jsonable interface.
+func (journal *TaskJournal) Load(filepath string) error {
+	bytes, err := core.LoadBytes(filepath)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(bytes, journal)
+	if err == nil {
+		journal.filepath = filepath
+	}
+	return err
+
+}
+
+// SaveTo writes the journal data to the given file.
+// It implements the jsonable interface.
+func (journal *TaskJournal) SaveTo(filepath string) error {
+	bytes, err := json.MarshalIndent(journal, core.JsonPrefix, core.JsonIndent)
+	if err != nil {
+		return err
+	}
+	err = core.WriteBytes(filepath, bytes)
+	if err == nil {
+		journal.filepath = filepath
+	}
+	return err
+}
+
+// File returns the persistance filepath (if journal is created by Load)
+func (journal *TaskJournal) File() string {
+	return journal.filepath
+}
+
+// Save writes the journal data to the persistence file
+func (journal *TaskJournal) Save() error {
+	return journal.SaveTo(journal.File())
+}
+
+func (journal TaskJournal) ListWithFilter(taskFilter TaskFilter) string {
+	s := fmt.Sprintln()
+	nlisted := 0
+	for i := 0; i < len(journal.TaskList); i++ {
+		task := journal.TaskList[i]
+		if taskFilter(task) {
+			s += fmt.Sprintf("%s\n", task.String())
+			nlisted++
+		}
+	}
+	if nlisted == 0 {
+		s += fmt.Sprint("No tasks. Go have a drink\n\n")
+	} else {
+		s += fmt.Sprintf("\nLegend: %s  %s  %s\n", StatusTodo.legend(), StatusDoing.legend(), StatusDone.legend())
+	}
+	return s
+}
+
+// List prints all tasks (no filter)
+func (journal TaskJournal) List() string {
+	return journal.ListWithFilter(TaskFilterAll)
+}
+
+func (journal TaskJournal) String() string {
+	return journal.List()
+}
+
+func CreateTestJournal() TaskJournal {
+	journal := TaskJournal{
+		TaskList: TaskArray{
+			CreateTestTask(1, "Write documentation for todogo"),
+			CreateTestTask(2, "Create unit test for todogo"),
+			CreateTestTask(3, "Add a function to print a tasks journal"),
+			CreateTestTask(4, "Organize a code review of todogo"),
+		},
+	}
+	return journal
+}
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 // TaskMap is the data structure for a map of indexed Tasks
 type TaskMap map[uint64]Task
@@ -84,41 +249,5 @@ func taskMap2Array(taskmap TaskMap) TaskArray {
 // --------------------------------------------------------------
 // Implementation of the Jsonable interface
 
-// Load reads a json file and map the data into a TaskArray.
-// It implements the jsonable interface.
-func (ta *TaskArray) Load(filepath string) error {
-	bytes, err := core.LoadBytes(filepath)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal(bytes, ta)
-}
-
-// SaveTo writes the TaskArray data into a json file.
-// It implements the jsonable interface.
-func (ta *TaskArray) SaveTo(filepath string) error {
-	bytes, err := json.MarshalIndent(*ta, core.JsonPrefix, core.JsonIndent)
-	if err != nil {
-		return err
-	}
-	return core.WriteBytes(filepath, bytes)
-}
-
-func (ta *TaskArray) File() string {
-	return ""
-}
-
-func (ta *TaskArray) Save() error {
-	return ta.SaveTo(ta.File())
-}
-
 // --------------------------------------------------------------
 // Implementation of the Stringable interface
-
-// String implements the stringable interface
-func (task Task) String() string {
-	dtlabel := datelabel(task.Timestamp)
-	template := "%2d [%s] %s : %s"
-	s := fmt.Sprintf(template, task.UIndex, dtlabel, task.Status.String(), task.Description)
-	return s
-}

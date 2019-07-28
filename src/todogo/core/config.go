@@ -333,7 +333,7 @@ func GetConfig() (*Config, error) {
 }
 
 // GetTestConfig creates a test configuration (for test purposes)
-func GetTestConfig() Config {
+func CreateTestConfig() Config {
 	config := Config{
 		ContextName: "toto",
 		ContextList: ContextArray{

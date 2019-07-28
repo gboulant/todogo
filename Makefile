@@ -3,9 +3,11 @@ PREFIX ?= /usr/local
 
 all: install
 
-build:
-	GOPATH=${GOPATH} go build todogo/prog/todo
+demobuild:
 	GOPATH=${GOPATH} go build todogo/prog/demo
+
+demo: demobuild
+	./demo
 
 install:
 	GOPATH=${GOPATH} go install todogo/prog/todo

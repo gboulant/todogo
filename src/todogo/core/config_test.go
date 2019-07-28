@@ -49,7 +49,7 @@ func TestContexts(t *testing.T) {
 }
 
 func TestConfig(t *testing.T) {
-	config := GetTestConfig()
+	config := CreateTestConfig()
 	config.SaveTo("/tmp/toto.json")
 
 	var otherConfig Config

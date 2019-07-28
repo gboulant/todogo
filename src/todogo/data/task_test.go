@@ -1,32 +1,45 @@
 package data
 
 import (
-	"path/filepath"
 	"testing"
-	"todogo/core"
 )
 
-func TestCreateTask(t *testing.T) {
-	var reference int64 = 1563794667
-	task := Task{UIndex: 1, Timestamp: reference, Description: "Une tâche de test"}
-	if task.Timestamp != reference {
-		t.Errorf("timestamp is %d (should be %d)", task.Timestamp, reference)
+func TestTask(t *testing.T) {
+	task := CreateTestTask(10, "Write documentation for todogo")
+
+	status := task.Status
+	if status != StatusStart {
+		t.Errorf("Status is %d (should be %d)", status, StatusStart)
+	}
+
+	task.Status.Next()
+	label := task.Status.Label()
+	if label != "doing" {
+		t.Errorf("Status label is %s (should be %s)", label, "doing")
 	}
 }
 
-func TestJsonParsing(t *testing.T) {
-	var ta TaskArray
-	jsonfilepath, err := filepath.Abs("tasklist.json")
-	if err == nil {
-		err = core.Load(jsonfilepath, &ta)
-	}
+func TestTaskJournal(t *testing.T) {
+	journal := CreateTestJournal()
 
+	journalpath := "/tmp/todojournal.json"
+	err := journal.SaveTo(journalpath)
 	if err != nil {
 		t.Error(err)
 	}
 
-	err = core.Save("out.tasklist.json", &ta)
+	var anotherJournal TaskJournal
+	anotherJournal.Load(journalpath)
+	for i := 0; i < len(anotherJournal.TaskList); i++ {
+		gindexInit := journal.TaskList[i].GIndex
+		gindexRead := anotherJournal.TaskList[i].GIndex
+		if gindexRead != gindexRead {
+			t.Errorf("GIndex is %d (should be %d)", gindexRead, gindexInit)
+		}
+	}
+	err = anotherJournal.Save()
 	if err != nil {
 		t.Error(err)
 	}
+
 }
