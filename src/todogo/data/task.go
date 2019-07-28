@@ -9,6 +9,7 @@ import (
 
 const (
 	noIndex = -1
+	noUID   = 0
 )
 
 // =========================================================================
@@ -23,6 +24,7 @@ type Task struct {
 	Status      TaskStatus // Status of the task
 	OnBoard     bool       // True if the task is on board
 	NotePath    string     // Path to the note file (relative to the db root)
+	ParentID    uint64     // UID of the parent task
 }
 
 // initGlobalIndex initialises the global index of this task.
@@ -98,9 +100,7 @@ func (tasks *TaskArray) Append(task Task) error {
 	return nil
 }
 
-type filterFunction func(task Task) bool
-
-func (tasks TaskArray) index(filter filterFunction) int {
+func (tasks TaskArray) index(filter TaskFilter) int {
 	for i := 0; i < len(tasks); i++ {
 		if filter(tasks[i]) {
 			return i
@@ -109,7 +109,7 @@ func (tasks TaskArray) index(filter filterFunction) int {
 	return noIndex
 }
 
-func (tasks TaskArray) indeces(filter filterFunction) []int {
+func (tasks TaskArray) indeces(filter TaskFilter) []int {
 	results := make([]int, 0, len(tasks))
 	for i := 0; i < len(tasks); i++ {
 		if filter(tasks[i]) {
@@ -138,12 +138,12 @@ func (tasks *TaskArray) GetTask(uindex uint64) (*Task, error) {
 }
 
 // GetTasksWithFilter returns an array of pointer to the tasks that satisfy the filter
-func (tasks TaskArray) GetTasksWithFilter(filter filterFunction) []*Task {
+func (tasks TaskArray) GetTasksWithFilter(filter TaskFilter) []*Task {
 	results := make([]*Task, 0, len(tasks))
-	idxlist := tasks.indeces(filter)
-	for i := 0; i < len(idxlist); i++ {
-		idx := idxlist[i]
-		results = append(results, &tasks[idx])
+	for i := 0; i < len(tasks); i++ {
+		if filter(tasks[i]) {
+			results = append(results, &tasks[i])
+		}
 	}
 	return results
 }
@@ -188,4 +188,19 @@ func (tasks TaskArray) getFreeUID() uint64 {
 		freeUID = tasks[i].UIndex + 1
 	}
 	return freeUID
+}
+
+// ancestor returns true if parentId is an ancestor of childID
+func (tasks TaskArray) ancestor(childID uint64, parentID uint64) bool {
+	if childID == parentID {
+		return false
+	}
+	task, _ := tasks.GetTask(childID)
+	if task.ParentID == noUID {
+		return false
+	}
+	if task.ParentID == parentID {
+		return true
+	}
+	return tasks.ancestor(task.ParentID, parentID)
 }
