@@ -37,7 +37,7 @@ func TestContexts(t *testing.T) {
 	context := Context{DirPath: "/tmp/yeye", Name: "yeye"}
 	contexts.Append(context)
 	if len(contexts) != initlen+1 {
-		msg := fmt.Sprintf("Contexts size is %d (should be %d)", len(contexts), initlen)
+		msg := fmt.Sprintf("Contexts size is %d (should be %d)", len(contexts), initlen+1)
 		t.Error(msg)
 	}
 

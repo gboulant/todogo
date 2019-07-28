@@ -6,27 +6,31 @@ import (
 )
 
 func TestTask() {
-	journal := data.CreateTestJournal()
-	fmt.Println(journal.String())
+	tasks := data.TaskArray{
+		data.CreateTestTask(4, "Write documentation for todogo"),
+		data.CreateTestTask(3, "Create unit test for todogo"),
+		data.CreateTestTask(2, "Add a function to print a tasks journal"),
+		data.CreateTestTask(1, "Organize a code review of todogo"),
+	}
+	fmt.Println(tasks.String())
 
-	journalpath := "/tmp/todojournal.json"
-	err := journal.SaveTo(journalpath)
-	if err != nil {
-		fmt.Println(err)
+	index := tasks.IndexFromUID(4)
+	if index != 0 {
+		fmt.Printf("task index is %d (should be 0)", index)
+	}
+	tasks.SortByUID()
+	fmt.Println(tasks.String())
+	index = tasks.IndexFromUID(4)
+	if index != 3 {
+		fmt.Printf("task index is %d (should be 3)", index)
 	}
 
-	var anotherJournal data.TaskJournal
-	anotherJournal.Load(journalpath)
-	fmt.Println(anotherJournal.String())
-	for i := 0; i < len(anotherJournal.TaskList); i++ {
-		gindexInit := journal.TaskList[i].GIndex
-		gindexRead := anotherJournal.TaskList[i].GIndex
-		if gindexRead != gindexRead {
-			err := fmt.Errorf("GIndex is %d (should be %d)", gindexRead, gindexInit)
-			fmt.Println(err)
-		}
-	}
-	anotherJournal.Save()
+	tasks.SortByGID()
+	fmt.Println(tasks.String())
+
+	tasks.SortByTimestamp()
+	fmt.Println(tasks.String())
+
 }
 
 func main() {

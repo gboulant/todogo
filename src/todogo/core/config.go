@@ -78,7 +78,7 @@ func (context Context) NotesPath() string {
 // ContextArray defines a list of Context workspaces
 type ContextArray []Context
 
-// String implements the stringable interface for a Context
+// String implements the stringable interface for a ContextArray
 func (contexts ContextArray) String() string {
 	s := ""
 	for i := 0; i < len(contexts); i++ {

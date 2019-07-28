@@ -8,6 +8,10 @@ import (
 	"todogo/core"
 )
 
+const (
+	noIndex = -1
+)
+
 // =========================================================================
 // Implementation of the Task concept
 
@@ -65,6 +69,84 @@ func CreateTestTask(uindex int, text string) Task {
 
 // TaskArray is the data structure for a list (array) of Tasks
 type TaskArray []Task
+
+// String implements the stringable interface for a TaskArray
+func (tasks TaskArray) String() string {
+	s := ""
+	for i := 0; i < len(tasks); i++ {
+		s += fmt.Sprintf("%s\n", tasks[i].String())
+	}
+	return s
+}
+
+// Remove removes from the array the task of order index (index in the array)
+func (tasks *TaskArray) Remove(index int) error {
+	if index < 0 || index >= len(*tasks) {
+		return fmt.Errorf("ERR: index %d is out of range of tasks", index)
+	}
+	(*tasks)[index] = (*tasks)[len(*tasks)-1]
+	*tasks = (*tasks)[:len(*tasks)-1]
+	return nil
+}
+
+// Append adds the task to the array. Returns an error if a task with same uid exists
+func (tasks *TaskArray) Append(task Task) error {
+	if tasks.GetTask(task.UIndex) != nil {
+		return fmt.Errorf("ERR: a task with UID %d already exists", task.UIndex)
+	}
+	*tasks = append(*tasks, task)
+	return nil
+}
+
+type filterFunction func(task Task) bool
+
+func (tasks TaskArray) index(filter filterFunction) int {
+	for i := 0; i < len(tasks); i++ {
+		if filter(tasks[i]) {
+			return i
+		}
+	}
+	return noIndex
+}
+
+// IndexFromUID returns the array index of the task with the given UID
+func (tasks TaskArray) IndexFromUID(uindex uint64) int {
+	filterUID := func(task Task) bool {
+		return task.UIndex == uindex
+	}
+	return tasks.index(filterUID)
+}
+
+// GetTask returns a pointer to the task of the sepcified UID
+func (tasks *TaskArray) GetTask(uindex uint64) *Task {
+	idx := tasks.IndexFromUID(uindex)
+	if idx == noIndex {
+		return nil
+	}
+	return &(*tasks)[idx]
+}
+
+func (tasks TaskArray) byUID(i int, j int) bool {
+	return tasks[i].UIndex < tasks[j].UIndex
+}
+func (tasks TaskArray) byGID(i int, j int) bool {
+	return tasks[i].GIndex < tasks[j].GIndex
+}
+func (tasks TaskArray) byTimestamp(i int, j int) bool {
+	return tasks[i].Timestamp < tasks[j].Timestamp
+}
+
+func (tasks *TaskArray) SortByUID() {
+	sort.Slice(*tasks, tasks.byUID)
+}
+
+func (tasks *TaskArray) SortByGID() {
+	sort.Slice(*tasks, tasks.byGID)
+}
+
+func (tasks *TaskArray) SortByTimestamp() {
+	sort.Slice(*tasks, tasks.byTimestamp)
+}
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // WARNING: TO BE DELETE
