@@ -12,6 +12,8 @@ func commandList(cmdname string, args []string) error {
 
 	var board bool
 	flagset.BoolVar(&board, "b", false, "List only the tasks on board")
+	var tree bool
+	flagset.BoolVar(&tree, "t", false, "Tree representation of parent relations")
 
 	flagset.Parse(args)
 
@@ -24,7 +26,11 @@ func commandList(cmdname string, args []string) error {
 	if board {
 		listing = journal.ListWithFilter(data.TaskFilterOnBoard)
 	} else {
-		listing = journal.List()
+		if tree {
+			listing = journal.Tree()
+		} else {
+			listing = journal.List()
+		}
 	}
 	fmt.Println(listing)
 	return nil

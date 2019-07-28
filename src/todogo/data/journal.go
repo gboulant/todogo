@@ -135,9 +135,20 @@ func (journal TaskJournal) ListWithFilter(taskFilter TaskFilter) string {
 	return s
 }
 
-// List prints all tasks (no filter)
+// List returns a string representation of the list of all tasks (no filter)
 func (journal TaskJournal) List() string {
 	return journal.ListWithFilter(TaskFilterAll)
+}
+
+// Tree returns a string representation of the tree structure of tasks (parent relations)
+func (journal TaskJournal) Tree() string {
+	if len(journal.TaskList) == 0 {
+		return fmt.Sprint("\nNo tasks. Go have a drink\n\n")
+	}
+	s := fmt.Sprintln()
+	s += TreeString(journal.TaskList)
+	s += fmt.Sprintf("\nLegend: %s  %s  %s\n", StatusTodo.legend(), StatusDoing.legend(), StatusDone.legend())
+	return s
 }
 
 func (journal TaskJournal) String() string {

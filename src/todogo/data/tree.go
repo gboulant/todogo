@@ -47,9 +47,9 @@ func TreeString(tasks TaskArray) string {
 	// parent) and then create a string reresentation of the children tree using
 	// a recurcive function nodeString
 
-	const tabindent = "   "
-	const tabchild = "└──"
-	const tabstart = "* "
+	const tabindent = "    "
+	const tabchild = " └──"
+	const tabstart = ""
 	startIndent := func(size int) string {
 		s := ""
 		for i := 0; i < size; i++ {
