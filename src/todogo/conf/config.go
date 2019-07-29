@@ -163,52 +163,6 @@ func (config *Config) RemoveContext(name string) error {
 	return nil
 }
 
-// --------------------------------------------------------------
-// Implementation of the Stringable interface of  config with pretty
-// representations
-
-// PrettyPrint indicates wether the printable string should be pretty or plain text
-const PrettyPrint bool = true
-
-// String implements the stringable interface for a Config
-func (config Config) String() string {
-	if PrettyPrint {
-		return config.PrettyString()
-	} else {
-		return config.PlainString()
-	}
-}
-
-// PlainString implements the stringable interface for a Config
-func (config Config) PlainString() string {
-	s := "\n"
-	for i := 0; i < len(config.ContextList); i++ {
-		context := config.ContextList[i]
-		if context.Name == config.ContextName {
-			s += fmt.Sprintf("* %s\n", context.String())
-		} else {
-			s += fmt.Sprintf("  %s\n", context.String())
-		}
-	}
-	s += fmt.Sprint("\nLegend: * active context\n")
-	return s
-}
-
-// PrettyString is a variant of String for a pretty print of Config on standard output
-func (config Config) PrettyString() string {
-	s := "\n"
-	for i := 0; i < len(config.ContextList); i++ {
-		context := config.ContextList[i]
-		if context.Name == config.ContextName {
-			s += fmt.Sprintf("%s\n", core.ColorString(core.CharacterDisk+" "+context.String(), core.ColorMagenta))
-		} else {
-			s += fmt.Sprintf("  %s\n", context.String())
-		}
-	}
-	s += fmt.Sprintf("\nLegend: %s", core.ColorString(core.CharacterDisk+" active context\n", core.ColorMagenta))
-	return s
-}
-
 // =========================================================================
 
 // GetConfig returns the current configuration (and load it if first call)

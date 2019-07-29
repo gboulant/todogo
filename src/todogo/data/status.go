@@ -68,7 +68,11 @@ func (status TaskStatus) prettyString() string {
 }
 
 func (status TaskStatus) symbolString() string {
-	return taskStatusSymbol[status]
+	if conf.WithColor {
+		return core.ColorString(taskStatusSymbol[status], taskStatusColors[status])
+	} else {
+		return taskStatusSymbol[status]
+	}
 }
 
 func (status TaskStatus) legend() string {
@@ -85,7 +89,8 @@ func (status TaskStatus) prettyLegend() string {
 }
 
 func (status TaskStatus) symbolLegend() string {
-	legend := fmt.Sprintf("%s %s", taskStatusSymbol[status], status.Label())
+	statusSymbol := status.symbolString()
+	legend := fmt.Sprintf("%s %s", statusSymbol, status.Label())
 	return legend
 }
 
