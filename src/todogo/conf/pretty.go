@@ -46,7 +46,7 @@ func (config Config) PlainString() string {
 		if context.Name == config.ContextName {
 			s += colored(fmt.Sprintf("* %s\n", context.String()))
 		} else {
-			s += colored(fmt.Sprintf("  %s\n", context.String()))
+			s += fmt.Sprintf("  %s\n", context.String())
 		}
 	}
 	s += fmt.Sprintf("\nLegend: %s\n", colored("* active context"))
