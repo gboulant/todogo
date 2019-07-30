@@ -6,8 +6,17 @@ import (
 	"sort"
 )
 
-// noIndex is used to specify an undefined ContextArray index
-const noIndex = -1
+const (
+	// JournalFilename is the base name of the journal of a context
+	JournalFilename = "journal.json"
+	// ArchiveFilename is the base name of the archive of a context
+	ArchiveFilename = "archive.json"
+	// NotebookDirname is the base directory name of the notebook of a context
+	NotebookDirname = "notes"
+
+	// noIndex is used to specify an undefined ContextArray index
+	noIndex = -1
+)
 
 // =========================================================================
 // Implementation of the a context Context
@@ -20,22 +29,35 @@ type Context struct {
 
 // String implements the stringable interface for a Context
 func (context Context) String() string {
-	return fmt.Sprintf("%-8s: %s", context.Name, context.DirPath)
+	return fmt.Sprintf("%-8s: %s", context.Name, context.absDirPath())
+}
+
+// absDirPath returns the absolute path to the root directory of this context.
+// If DirPath is a relative path, then it is considered as relative to the
+// configuration root directory. That is the case generally when the option
+// -p was not specified at context creation. In such a case, the context
+// workspace is created as a subdirectory of the configuration directory
+// with name equal to the context name.
+func (context Context) absDirPath() string {
+	if filepath.IsAbs(context.DirPath) {
+		return context.DirPath
+	}
+	return filepath.Join(cfgdirpath, context.DirPath)
 }
 
 // JournalPath returns the absolute path of the journal of this context
 func (context Context) JournalPath() string {
-	return filepath.Join(context.DirPath, JournalFilename)
+	return filepath.Join(context.absDirPath(), JournalFilename)
 }
 
 // ArchivePath returns the absolute path of the archive of this context
 func (context Context) ArchivePath() string {
-	return filepath.Join(context.DirPath, ArchiveFilename)
+	return filepath.Join(context.absDirPath(), ArchiveFilename)
 }
 
 // NotesPath returns the absolute path of the notes directory of this context
 func (context Context) NotesPath() string {
-	return filepath.Join(context.DirPath, NotebookDirname)
+	return filepath.Join(context.absDirPath(), NotebookDirname)
 }
 
 // =========================================================================

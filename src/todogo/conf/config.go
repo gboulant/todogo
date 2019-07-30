@@ -15,12 +15,6 @@ const (
 	// configFilename is the base name (relative to configDirname) of the configuration file
 	configFilename = "config.json"
 
-	// JournalFilename is the base name of the journal of a context
-	JournalFilename = "journal.json"
-	// ArchiveFilename is the base name of the archive of a context
-	ArchiveFilename = "archive.json"
-	// NotebookDirname is the base directory name of the notebook of a context
-	NotebookDirname = "notes"
 	// defaultContextName is the name (and relative path) of the default context
 	defaultContextName = "default"
 )
@@ -35,9 +29,14 @@ var (
 	userConfig *Config
 )
 
-// DefaultContextPath returns a default path for this context name
+// DefaultContextPath returns a default path for this context name. The default
+// context workspace is a subdirectory of the configuration root folder with a
+// dirname equals to the context name.
 func DefaultContextPath(name string) string {
-	return filepath.Join(cfgdirpath, name)
+	// Practically we set the default path to the context name itself so that it
+	// is interpreted as a relative path (relative to the configuration root
+	// directory.)
+	return name
 }
 
 // =========================================================================
