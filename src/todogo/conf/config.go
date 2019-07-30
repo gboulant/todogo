@@ -11,7 +11,7 @@ import (
 
 const (
 	// configDirname is the directory name of the configuration (relative to user HOME)
-	configDirname = ".todogo"
+	configDirname = ".config/todogo"
 	// configFilename is the base name (relative to configDirname) of the configuration file
 	configFilename = "config.json"
 
