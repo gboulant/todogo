@@ -37,6 +37,12 @@ var taskStatusSymbol = map[TaskStatus]string{
 	StatusDone:  "x",
 }
 
+var taskStatusPretty = map[TaskStatus]string{
+	StatusTodo:  core.PrettyDiskVoid,
+	StatusDoing: core.PrettyDiskHalf,
+	StatusDone:  core.PrettyDiskFull,
+}
+
 // Label returns a string representation of this status
 func (status TaskStatus) Label() string {
 	return taskStatusLabels[status]
@@ -64,7 +70,10 @@ func (status TaskStatus) String() string {
 }
 
 func (status TaskStatus) prettyString() string {
-	return core.ColorString(core.CharacterDisk, taskStatusColors[status])
+	if conf.WithColor {
+		return core.ColorString(taskStatusPretty[status], taskStatusColors[status])
+	}
+	return taskStatusPretty[status]
 }
 
 func (status TaskStatus) symbolString() string {
@@ -84,8 +93,11 @@ func (status TaskStatus) legend() string {
 }
 
 func (status TaskStatus) prettyLegend() string {
-	legend := fmt.Sprintf("%s %s", core.CharacterDisk, status.Label())
-	return core.ColorString(legend, taskStatusColors[status])
+	legend := fmt.Sprintf("%s %s", taskStatusPretty[status], status.Label())
+	if conf.WithColor {
+		return core.ColorString(legend, taskStatusColors[status])
+	}
+	return legend
 }
 
 func (status TaskStatus) symbolLegend() string {

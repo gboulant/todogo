@@ -59,11 +59,11 @@ func (config Config) PrettyString() string {
 	for i := 0; i < len(config.ContextList); i++ {
 		context := config.ContextList[i]
 		if context.Name == config.ContextName {
-			s += fmt.Sprintf("%s\n", core.ColorString(core.CharacterDisk+" "+context.String(), core.ColorMagenta))
+			s += fmt.Sprintf("%s\n", core.ColorString(core.PrettyDisk+" "+context.String(), core.ColorMagenta))
 		} else {
 			s += fmt.Sprintf("  %s\n", context.String())
 		}
 	}
-	s += fmt.Sprintf("\nLegend: %s", core.ColorString(core.CharacterDisk+" active context\n", core.ColorMagenta))
+	s += fmt.Sprintf("\nLegend: %s", core.ColorString(core.PrettyDisk+" active context\n", core.ColorMagenta))
 	return s
 }
