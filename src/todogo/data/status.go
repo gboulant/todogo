@@ -39,7 +39,7 @@ var taskStatusSymbol = map[TaskStatus]string{
 
 var taskStatusPretty = map[TaskStatus]string{
 	StatusTodo:  core.PrettyDiskVoid,
-	StatusDoing: core.PrettyDiskHalf,
+	StatusDoing: core.PrettyTriangleRight,
 	StatusDone:  core.PrettyDiskFull,
 }
 

@@ -10,60 +10,35 @@ import (
 	"todogo/core"
 )
 
-// PrettyPrint indicates wether the printable string should be pretty or plain text
-const PrettyPrint bool = false
-const WithColor bool = true
+var dotSymbolMap = map[bool]string{
+	true:  core.PrettyDisk, // Pretty
+	false: "*",             // Plain
+}
+
+type colorFunction func(s string) string
+
+var colorFunctionMap = map[bool]colorFunction{
+	true:  func(s string) string { return core.ColorString(s, core.ColorMagenta) },
+	false: func(s string) string { return s },
+}
 
 // String implements the stringable interface for a Config
 func (config Config) String() string {
-	if PrettyPrint {
-		return config.PrettyString()
-	} else {
-		return config.PlainString()
-	}
+	symbol := dotSymbolMap[PrettyPrint]
+	clrfun := colorFunctionMap[WithColor]
+	return config.createString(symbol, clrfun)
 }
 
-// PlainString implements the stringable interface for a Config
-func (config Config) PlainString() string {
-
-	withcolor := func(s string) string {
-		return core.ColorString(s, core.ColorMagenta)
-	}
-	uncolored := func(s string) string {
-		return s
-	}
-
-	var colored func(s string) string
-	if WithColor {
-		colored = withcolor
-	} else {
-		colored = uncolored
-	}
-
+func (config Config) createString(dotSymbol string, coloredstr colorFunction) string {
 	s := "\n"
 	for i := 0; i < len(config.ContextList); i++ {
 		context := config.ContextList[i]
 		if context.Name == config.ContextName {
-			s += colored(fmt.Sprintf("* %s\n", context.String()))
+			s += coloredstr(fmt.Sprintf("%s %s\n", dotSymbol, context.String()))
 		} else {
 			s += fmt.Sprintf("  %s\n", context.String())
 		}
 	}
-	s += fmt.Sprintf("\nLegend: %s\n", colored("* active context"))
-	return s
-}
-
-// PrettyString is a variant of String for a pretty print of Config on standard output
-func (config Config) PrettyString() string {
-	s := "\n"
-	for i := 0; i < len(config.ContextList); i++ {
-		context := config.ContextList[i]
-		if context.Name == config.ContextName {
-			s += fmt.Sprintf("%s\n", core.ColorString(core.PrettyDisk+" "+context.String(), core.ColorMagenta))
-		} else {
-			s += fmt.Sprintf("  %s\n", context.String())
-		}
-	}
-	s += fmt.Sprintf("\nLegend: %s", core.ColorString(core.PrettyDisk+" active context\n", core.ColorMagenta))
+	s += fmt.Sprintf("\nLegend: %s\n", coloredstr(dotSymbol+" active context"))
 	return s
 }

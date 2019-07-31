@@ -99,7 +99,7 @@ func TestTaskArrayAncestor(t *testing.T) {
 }
 
 func TestTaskArrayTreeString(t *testing.T) {
-	viewlog = true
+	viewlog = false
 
 	tasks := createTreeTaskArray()
 	printlog(tasks.String())
