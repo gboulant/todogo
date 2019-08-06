@@ -64,6 +64,9 @@ type Config struct {
 	filepath    string // WRN: no jsonified (on purpose) because starts with minus letter
 }
 
+// defaultConfig() creates and returns a default configuration when no
+// configuration exists. The default configuration is a configuration with one
+// single context named "default".
 func defaultConfig() Config {
 	config := Config{
 		ContextName: defaultContextName,
@@ -116,18 +119,23 @@ func (config *Config) File() string {
 	return config.filepath
 }
 
+// Save writes the config to the file it has been loaded from. The file path is
+// given by the methode File.
 func (config *Config) Save() error {
 	return config.SaveTo(config.File())
 }
 
+// AddContext adds a new context in the configuration
 func (config *Config) AddContext(context Context) error {
-	return config.ContextList.Append(context)
+	return config.ContextList.append(context)
 }
 
+// GetContext returns the context whose name is the given name
 func (config *Config) GetContext(name string) *Context {
-	return config.ContextList.GetContext(name)
+	return config.ContextList.getContext(name)
 }
 
+// SetActiveContext selects the context with the given name as the active context
 func (config *Config) SetActiveContext(name string) error {
 	context := config.GetContext(name)
 	if context == nil {
@@ -137,10 +145,13 @@ func (config *Config) SetActiveContext(name string) error {
 	return nil
 }
 
+// GetActiveContext returns the currently active context
 func (config *Config) GetActiveContext() *Context {
-	return config.ContextList.GetContext(config.ContextName)
+	return config.ContextList.getContext(config.ContextName)
 }
 
+// RemoveContext removes the context with the given name from the configuration.
+// This operation does not delete the workspace associated to the context.
 func (config *Config) RemoveContext(name string) error {
 	if name == defaultContextName {
 		return errors.New("ERR: The default context can not be removed")
@@ -150,8 +161,8 @@ func (config *Config) RemoveContext(name string) error {
 		return fmt.Errorf("ERR: The context %s does not exists", name)
 	}
 	dir := context.DirPath
-	idx := config.ContextList.IndexFromName(name)
-	err := config.ContextList.Remove(idx)
+	idx := config.ContextList.indexFromName(name)
+	err := config.ContextList.remove(idx)
 
 	if err != nil {
 		return err
@@ -195,7 +206,7 @@ func GetConfig() (*Config, error) {
 	return userConfig, nil
 }
 
-// GetTestConfig creates a test configuration (for test purposes)
+// CreateTestConfig creates a test configuration (for test purposes)
 func CreateTestConfig() Config {
 	config := Config{
 		ContextName: "toto",

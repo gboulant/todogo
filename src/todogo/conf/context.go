@@ -75,7 +75,8 @@ func (contexts ContextArray) String() string {
 	return s
 }
 
-func (contexts *ContextArray) Remove(index int) error {
+// Remove removes the context of the specified index from the Contexts array
+func (contexts *ContextArray) remove(index int) error {
 	if index < 0 || index >= len(*contexts) {
 		return fmt.Errorf("ERR: index %d is out of range of contexts", index)
 	}
@@ -84,15 +85,15 @@ func (contexts *ContextArray) Remove(index int) error {
 	return nil
 }
 
-func (contexts *ContextArray) Append(context Context) error {
-	if contexts.GetContext(context.Name) != nil {
+func (contexts *ContextArray) append(context Context) error {
+	if contexts.getContext(context.Name) != nil {
 		return fmt.Errorf("ERR: a context with name %s already exists", context.Name)
 	}
 	*contexts = append(*contexts, context)
 	return nil
 }
 
-func (contexts *ContextArray) SortByName() {
+func (contexts *ContextArray) sortByName() {
 	byName := func(i int, j int) bool {
 		return (*contexts)[i].Name < (*contexts)[j].Name
 	}
@@ -110,15 +111,15 @@ func (contexts ContextArray) index(filter filterFunction) int {
 	return noIndex
 }
 
-func (contexts ContextArray) IndexFromName(name string) int {
+func (contexts ContextArray) indexFromName(name string) int {
 	filter := func(context Context) bool {
 		return context.Name == name
 	}
 	return contexts.index(filter)
 }
 
-func (contexts *ContextArray) GetContext(name string) *Context {
-	idx := contexts.IndexFromName(name)
+func (contexts *ContextArray) getContext(name string) *Context {
+	idx := contexts.indexFromName(name)
 	if idx == noIndex {
 		return nil
 	}

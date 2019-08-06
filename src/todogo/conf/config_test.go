@@ -13,21 +13,21 @@ func TestContexts(t *testing.T) {
 		Context{DirPath: "/tmp/tata", Name: "tata"},
 	}
 
-	pcontext := contexts.GetContext("tutu")
+	pcontext := contexts.getContext("tutu")
 	if pcontext.DirPath != "/tmp/tutu" {
 		msg := fmt.Sprintf("DirPath is %s (should be %s)", pcontext.DirPath, "/tmp/tutu")
 		t.Error(msg)
 	}
 
 	pcontext.DirPath = "/my/path"
-	pcontext = contexts.GetContext("tutu")
+	pcontext = contexts.getContext("tutu")
 	if pcontext.DirPath != "/my/path" {
 		msg := fmt.Sprintf("DirPath is %s (should be %s)", pcontext.DirPath, "/my/path")
 		t.Error(msg)
 	}
 
-	contexts.Remove(contexts.IndexFromName("tutu"))
-	pcontext = contexts.GetContext("tutu")
+	contexts.remove(contexts.indexFromName("tutu"))
+	pcontext = contexts.getContext("tutu")
 	if pcontext != nil {
 		msg := fmt.Sprintf("Context %s should not exist", "tutu")
 		t.Error(msg)
@@ -35,13 +35,13 @@ func TestContexts(t *testing.T) {
 
 	initlen := len(contexts)
 	context := Context{DirPath: "/tmp/yeye", Name: "yeye"}
-	contexts.Append(context)
+	contexts.append(context)
 	if len(contexts) != initlen+1 {
 		msg := fmt.Sprintf("Contexts size is %d (should be %d)", len(contexts), initlen+1)
 		t.Error(msg)
 	}
 
-	pcontext = contexts.GetContext("yeye")
+	pcontext = contexts.getContext("yeye")
 	if pcontext.DirPath != "/tmp/yeye" {
 		msg := fmt.Sprintf("DirPath is %s (should be %s)", pcontext.DirPath, "/tmp/yeye")
 		t.Error(msg)
@@ -54,7 +54,7 @@ func TestConfig(t *testing.T) {
 
 	var otherConfig Config
 	otherConfig.Load("/tmp/toto.json")
-	dirpath := otherConfig.ContextList.GetContext("tutu").DirPath
+	dirpath := otherConfig.ContextList.getContext("tutu").DirPath
 	if dirpath != "/tmp/tutu" {
 		t.Errorf("dirpath is %s (should be %s)", dirpath, "/tmp/tutu")
 	}
@@ -71,7 +71,7 @@ func TestConfigIO(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = config.ContextList.Append(Context{DirPath: "/tmp/yeye", Name: "yeye"})
+	err = config.ContextList.append(Context{DirPath: "/tmp/yeye", Name: "yeye"})
 	if err != nil {
 		t.Error(err)
 	}
@@ -80,8 +80,8 @@ func TestConfigIO(t *testing.T) {
 		t.Error(err)
 	}
 
-	idx := config.ContextList.IndexFromName("yeye")
-	err = config.ContextList.Remove(idx)
+	idx := config.ContextList.indexFromName("yeye")
+	err = config.ContextList.remove(idx)
 	if err != nil {
 		fmt.Println(err)
 	}
