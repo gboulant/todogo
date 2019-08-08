@@ -52,7 +52,12 @@ func DefaultContextPath(name string) string {
 // Parameters is a structure holding various configuration parameters in
 // addition to the list of working contexts
 type Parameters struct {
+	// DefaultCommand specifies the default todo command (no options on the cmd line)
 	DefaultCommand string
+	// PrettyPrint indicates wether the printable string should be pretty or plain text
+	PrettyPrint bool
+	// WithColor indicates wether the printable string should be with color or not
+	WithColor bool
 }
 
 // Config defines the configuration of todo application. A configuration
@@ -78,6 +83,8 @@ func defaultConfig() Config {
 		},
 		Parameters: Parameters{
 			DefaultCommand: "board",
+			PrettyPrint:    true,
+			WithColor:      true,
 		},
 	}
 	return config

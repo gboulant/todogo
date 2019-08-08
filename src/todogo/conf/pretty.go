@@ -24,8 +24,8 @@ var colorFunctionMap = map[bool]colorFunction{
 
 // String implements the stringable interface for a Config
 func (config Config) String() string {
-	symbol := dotSymbolMap[PrettyPrint]
-	clrfun := colorFunctionMap[WithColor]
+	symbol := dotSymbolMap[config.Parameters.PrettyPrint]
+	clrfun := colorFunctionMap[config.Parameters.WithColor]
 	return config.createString(symbol, clrfun)
 }
 

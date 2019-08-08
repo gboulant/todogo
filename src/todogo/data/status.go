@@ -61,49 +61,41 @@ func (status *TaskStatus) Value(label string) error {
 	return errors.New(msg)
 }
 
+type renderingFunction func(s string) string
+type renderingMap map[TaskStatus]string
+
+func (status TaskStatus) getRenderingTools() (renderingFunction, renderingMap) {
+	config, _ := conf.GetConfig() // We don't test the err, we can not arrive here in case of config error
+	var renderingMap renderingMap
+	if config.Parameters.PrettyPrint {
+		renderingMap = taskStatusPretty
+	} else {
+		renderingMap = taskStatusSymbol
+	}
+
+	var renderingFunction renderingFunction
+	if config.Parameters.WithColor {
+		renderingFunction = func(s string) string {
+			return core.ColorString(s, taskStatusColors[status])
+		}
+	} else {
+		renderingFunction = func(s string) string {
+			return s
+		}
+	}
+
+	return renderingFunction, renderingMap
+}
+
 func (status TaskStatus) String() string {
-	if conf.PrettyPrint {
-		return status.prettyString()
-	} else {
-		return status.symbolString()
-	}
-}
-
-func (status TaskStatus) prettyString() string {
-	if conf.WithColor {
-		return core.ColorString(taskStatusPretty[status], taskStatusColors[status])
-	}
-	return taskStatusPretty[status]
-}
-
-func (status TaskStatus) symbolString() string {
-	if conf.WithColor {
-		return core.ColorString(taskStatusSymbol[status], taskStatusColors[status])
-	} else {
-		return taskStatusSymbol[status]
-	}
+	renderingFunction, renderingMap := status.getRenderingTools()
+	return renderingFunction(renderingMap[status])
 }
 
 func (status TaskStatus) legend() string {
-	if conf.PrettyPrint {
-		return status.prettyLegend()
-	} else {
-		return status.symbolLegend()
-	}
-}
-
-func (status TaskStatus) prettyLegend() string {
-	legend := fmt.Sprintf("%s %s", taskStatusPretty[status], status.Label())
-	if conf.WithColor {
-		return core.ColorString(legend, taskStatusColors[status])
-	}
-	return legend
-}
-
-func (status TaskStatus) symbolLegend() string {
-	statusSymbol := status.symbolString()
-	legend := fmt.Sprintf("%s %s", statusSymbol, status.Label())
-	return legend
+	renderingFunction, renderingMap := status.getRenderingTools()
+	legend := fmt.Sprintf("%s %s", renderingMap[status], status.Label())
+	return renderingFunction(legend)
 }
 
 // Next makes the status change to its next state
