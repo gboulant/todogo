@@ -181,6 +181,44 @@ func (config *Config) RemoveContext(name string) error {
 }
 
 // =========================================================================
+// Implementation of the Stringable interface of  config with pretty
+// representations
+// --------------------------------------------------------------
+
+var dotSymbolMap = map[bool]string{
+	true:  core.PrettyDisk, // Pretty
+	false: "*",             // Plain
+}
+
+type renderingFunction func(s string) string
+
+var renderingFunctionMap = map[bool]renderingFunction{
+	true:  func(s string) string { return core.ColorString(s, core.ColorMagenta) },
+	false: func(s string) string { return s },
+}
+
+// String implements the stringable interface for a Config
+func (config Config) String() string {
+	symbol := dotSymbolMap[config.Parameters.PrettyPrint]
+	clrfun := renderingFunctionMap[config.Parameters.WithColor]
+	return config.createString(symbol, clrfun)
+}
+
+func (config Config) createString(dotSymbol string, renderingFunc renderingFunction) string {
+	s := "\n"
+	for i := 0; i < len(config.ContextList); i++ {
+		context := config.ContextList[i]
+		if context.Name == config.ContextName {
+			s += renderingFunc(fmt.Sprintf("%s %s\n", dotSymbol, context.String()))
+		} else {
+			s += fmt.Sprintf("  %s\n", context.String())
+		}
+	}
+	s += fmt.Sprintf("\nLegend: %s\n", renderingFunc(dotSymbol+" active context"))
+	return s
+}
+
+// =========================================================================
 
 // GetConfig returns the current configuration (and load it if first call)
 func GetConfig() (*Config, error) {
