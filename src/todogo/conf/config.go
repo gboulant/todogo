@@ -19,13 +19,6 @@ const (
 	defaultContextName = "default"
 )
 
-const (
-	// PrettyPrint indicates wether the printable string should be pretty or plain text
-	PrettyPrint bool = true
-	// WithColor indicates wether the printable string should be with color or not
-	WithColor bool = true
-)
-
 var (
 	// cfgdirpath is the absolute path of the configuration directory
 	cfgdirpath = filepath.Join(os.Getenv("HOME"), configDirname)

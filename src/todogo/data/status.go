@@ -61,43 +61,6 @@ func (status *TaskStatus) Value(label string) error {
 	return errors.New(msg)
 }
 
-type renderingFunction func(s string) string
-type renderingMap map[TaskStatus]string
-
-func (status TaskStatus) getRenderingTools() (renderingFunction, renderingMap) {
-	config, _ := conf.GetConfig() // We don't test the err, we can not arrive here in case of config error
-	var renderingMap renderingMap
-	if config.Parameters.PrettyPrint {
-		renderingMap = taskStatusPretty
-	} else {
-		renderingMap = taskStatusSymbol
-	}
-
-	var renderingFunction renderingFunction
-	if config.Parameters.WithColor {
-		renderingFunction = func(s string) string {
-			return core.ColorString(s, taskStatusColors[status])
-		}
-	} else {
-		renderingFunction = func(s string) string {
-			return s
-		}
-	}
-
-	return renderingFunction, renderingMap
-}
-
-func (status TaskStatus) String() string {
-	renderingFunction, renderingMap := status.getRenderingTools()
-	return renderingFunction(renderingMap[status])
-}
-
-func (status TaskStatus) legend() string {
-	renderingFunction, renderingMap := status.getRenderingTools()
-	legend := fmt.Sprintf("%s %s", renderingMap[status], status.Label())
-	return renderingFunction(legend)
-}
-
 // Next makes the status change to its next state
 func (status *TaskStatus) Next() error {
 	if *status == StatusEnd {
@@ -114,4 +77,44 @@ func (status *TaskStatus) Previous() error {
 	}
 	*status--
 	return nil
+}
+
+// --------------------------------------------------------------------------------------
+// Functions for pretty printing of tasks
+
+var renderingFunction func(s string, status TaskStatus) string
+var renderingMap map[TaskStatus]string
+
+func initRenderingTools() {
+	config, _ := conf.GetConfig() // unused to test the err, we can not arrive here in case of config error
+	if config.Parameters.PrettyPrint {
+		renderingMap = taskStatusPretty
+	} else {
+		renderingMap = taskStatusSymbol
+	}
+
+	if config.Parameters.WithColor {
+		renderingFunction = func(s string, status TaskStatus) string {
+			return core.ColorString(s, taskStatusColors[status])
+		}
+	} else {
+		renderingFunction = func(s string, status TaskStatus) string {
+			return s
+		}
+	}
+}
+
+func (status TaskStatus) String() string {
+	if renderingFunction == nil {
+		initRenderingTools()
+	}
+	return renderingFunction(renderingMap[status], status)
+}
+
+func (status TaskStatus) legend() string {
+	if renderingFunction == nil {
+		initRenderingTools()
+	}
+	legend := fmt.Sprintf("%s %s", renderingMap[status], status.Label())
+	return renderingFunction(legend, status)
 }
