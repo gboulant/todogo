@@ -2,24 +2,25 @@ package data
 
 import "fmt"
 
-type DataID uint64
+// TaskID is the data type of a task index (Usage ID or General ID)
+type TaskID uint64
 
-// dataIDArray is a list of DataId
-type dataIDArray []DataID
+// TaskIDArray is a list of TaskID
+type TaskIDArray []TaskID
 
 // treeMap is a map whose key is a data id and the value is the list of data id.
 // This map is used to map the children data to their parents (the key is a
 // parent data id and the value is the list of ID of its children)
-type treeMap map[DataID]dataIDArray
+type treeMap map[TaskID]TaskIDArray
 
 // addChild adds a child in the list of children of the data of ID parentID
-func (tree *treeMap) addChild(parentID DataID, childID DataID) error {
+func (tree *treeMap) addChild(parentID TaskID, childID TaskID) error {
 	if parentID == childID {
 		return fmt.Errorf("ERR: a child can not be parent of itself (ID=%v)", childID)
 	}
 	_, exists := (*tree)[parentID]
 	if !exists {
-		(*tree)[parentID] = make(dataIDArray, 0)
+		(*tree)[parentID] = make(TaskIDArray, 0)
 	}
 	(*tree)[parentID] = append((*tree)[parentID], childID)
 	return nil
@@ -29,7 +30,7 @@ func (tree *treeMap) addChild(parentID DataID, childID DataID) error {
 func (tree *treeMap) initialize(tasks TaskArray) error {
 	for i := 0; i < len(tasks); i++ {
 		task := tasks[i]
-		err := tree.addChild(DataID(task.ParentID), DataID(task.UIndex))
+		err := tree.addChild(TaskID(task.ParentID), TaskID(task.UIndex))
 		if err != nil {
 			return err
 		}
@@ -59,15 +60,15 @@ func TreeString(tasks TaskArray) string {
 	}(len(tabstart))
 
 	// nodeString is the recursive function
-	var nodeString func(dataID DataID, tab string) string
-	nodeString = func(dataID DataID, tab string) string {
-		idx := tasks.indexFromUID(uint64(dataID))
+	var nodeString func(taskID TaskID, tab string) string
+	nodeString = func(taskID TaskID, tab string) string {
+		idx := tasks.indexFromUID(uint64(taskID))
 		s := fmt.Sprintf("%s%s\n", tab, tasks[idx].String())
-		_, exists := tree[dataID]
+		_, exists := tree[taskID]
 		if !exists {
 			return s
 		}
-		children := tree[dataID]
+		children := tree[taskID]
 		if len(children) == 0 {
 			return s
 		}
@@ -84,9 +85,9 @@ func TreeString(tasks TaskArray) string {
 	}
 
 	stree := ""
-	noParentDataIDs := tree[noUID]
-	for k := 0; k < len(noParentDataIDs); k++ {
-		stree += nodeString(noParentDataIDs[k], tabstart)
+	noParentTaskIDs := tree[noUID]
+	for k := 0; k < len(noParentTaskIDs); k++ {
+		stree += nodeString(noParentTaskIDs[k], tabstart)
 	}
 	return stree
 }

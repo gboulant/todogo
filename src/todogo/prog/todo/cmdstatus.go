@@ -46,7 +46,7 @@ func modifyStatus(indeces core.IndexList, modifier statusModifier) error {
 		return err
 	}
 	for _, index := range indeces {
-		task, err := journal.TaskList.GetTask(index)
+		task, err := journal.GetTask(index)
 		if err != nil {
 			fmt.Println(err)
 		} else {

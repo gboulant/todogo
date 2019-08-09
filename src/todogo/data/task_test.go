@@ -41,15 +41,15 @@ func TestTaskArraySort(t *testing.T) {
 	if index != 0 {
 		t.Errorf("task index is %d (should be 0)", index)
 	}
-	tasks.SortByUID()
+	tasks.sortByUID()
 	printlog(tasks.String())
 	index = tasks.indexFromUID(4)
 	if index != 3 {
 		t.Errorf("task index is %d (should be 3)", index)
 	}
-	tasks.SortByGID()
+	tasks.sortByGID()
 	printlog(tasks.String())
-	tasks.SortByTimestamp()
+	tasks.sortByTimestamp()
 	printlog(tasks.String())
 }
 
@@ -63,22 +63,22 @@ func TestTaskArrayEdit(t *testing.T) {
 	}
 	printlog(tasks.String())
 
-	ptask, _ := tasks.GetTask(2)
+	ptask, _ := tasks.getTask(2)
 	if ptask.Description != "Create unit test for todogo" {
 		msg := fmt.Sprintf("Description is \"%s\" (should be \"%s\")", ptask.Description, "Create unit test for todogo")
 		t.Error(msg)
 	}
 
 	ptask.Description = "toto"
-	otherTaskPointer, _ := tasks.GetTask(2)
+	otherTaskPointer, _ := tasks.getTask(2)
 	if otherTaskPointer.Description != "toto" {
 		msg := fmt.Sprintf("Description is \"%s\" (should be \"%s\")", otherTaskPointer.Description, "toto")
 		t.Error(msg)
 	}
 	printlog(tasks.String())
 
-	tasks.Remove(tasks.indexFromUID(2))
-	ptask, _ = tasks.GetTask(2)
+	tasks.remove(tasks.indexFromUID(2))
+	ptask, _ = tasks.getTask(2)
 	if ptask != nil {
 		msg := fmt.Sprintf("Task %d should not exist", ptask.UIndex)
 		t.Error(msg)
@@ -86,18 +86,18 @@ func TestTaskArrayEdit(t *testing.T) {
 
 	initlen := len(tasks)
 	task := CreateTestTask(10, "Organize the documentation review")
-	tasks.Append(task)
+	tasks.append(task)
 	if len(tasks) != initlen+1 {
 		msg := fmt.Sprintf("Tasks size is %d (should be %d)", len(tasks), initlen+1)
 		t.Error(msg)
 	}
 
-	ptask, _ = tasks.GetTask(10)
+	ptask, _ = tasks.getTask(10)
 	if ptask.Description != "Organize the documentation review" {
 		msg := fmt.Sprintf("Description is \"%s\" (should be \"%s\")", ptask.Description, "Organize the documentation review")
 		t.Error(msg)
 	}
-	tasks.SortByUID()
+	tasks.sortByUID()
 	printlog(tasks.String())
 }
 
@@ -120,7 +120,7 @@ func TestTaskArrayFreeUID(t *testing.T) {
 	}
 
 	task := CreateTestTask(3, "Organize the documentation review")
-	tasks.Append(task)
+	tasks.append(task)
 	resuid = tasks.getFreeUID()
 	refuid = uint64(6)
 	printlog(fmt.Sprintf("uid: %d", resuid))
@@ -144,9 +144,9 @@ func TestTaskArrayFilter(t *testing.T) {
 		CreateTestTask(3, "Create documentation review fro todogo"),
 	}
 
-	ptask, _ := tasks.GetTask(4)
+	ptask, _ := tasks.getTask(4)
 	ptask.OnBoard = true
-	tasksOnBoard := tasks.GetTasksWithFilter(TaskFilterOnBoard)
+	tasksOnBoard := tasks.getTasksWithFilter(TaskFilterOnBoard)
 	for i := 0; i < len(tasksOnBoard); i++ {
 		printlog(tasksOnBoard[i].String())
 	}

@@ -27,7 +27,7 @@ func (journal *TaskJournal) New(text string) *Task {
 		OnBoard:     false,
 	}
 	task.initGlobalIndex()
-	journal.TaskList.Append(task)
+	journal.TaskList.append(task)
 	return &task
 }
 
@@ -40,14 +40,22 @@ func (journal *TaskJournal) Delete(uindex uint64) (Task, error) {
 		return task, fmt.Errorf("ERR: The task %d does not exist", uindex)
 	}
 	task = journal.TaskList[index]
-	err := journal.TaskList.Remove(index)
+	err := journal.TaskList.remove(index)
 	return task, err
 }
 
+// GetTask returns a pointer to the task whose usage ID is uindex
 func (journal TaskJournal) GetTask(uindex uint64) (*Task, error) {
-	return journal.TaskList.GetTask(uindex)
+	return journal.TaskList.getTask(uindex)
 }
 
+// GetTasksWithFilter returns an array of pointer to the tasks that satisfy the
+// given filter.
+func (journal TaskJournal) GetTasksWithFilter(filter TaskFilter) []*Task {
+	return journal.TaskList.getTasksWithFilter(filter)
+}
+
+// GetFreeUID returns the next free usage index in this journal
 func (journal TaskJournal) GetFreeUID() uint64 {
 	return journal.TaskList.getFreeUID()
 }
@@ -69,8 +77,9 @@ func (journal *TaskJournal) Load(filepath string) error {
 
 }
 
+// Add adds the given task to this journal
 func (journal *TaskJournal) Add(task Task) error {
-	return journal.TaskList.Append(task)
+	return journal.TaskList.append(task)
 }
 
 // LoadOrCreate tries to load a journal from the given file, and create a void
@@ -117,6 +126,9 @@ func (journal *TaskJournal) Save() error {
 	return journal.SaveTo(journal.File())
 }
 
+// ListWithFilter returns a string representation of the list of tasks that
+// satisfy the given filter (tasks are included in the list if the taskFilter
+// returns true).
 func (journal TaskJournal) ListWithFilter(taskFilter TaskFilter) string {
 	s := fmt.Sprintln()
 	nlisted := 0
@@ -157,7 +169,7 @@ func (journal TaskJournal) String() string {
 
 // AddOnBoard adds the specified task on board
 func (journal *TaskJournal) AddOnBoard(uindex uint64) error {
-	task, err := journal.TaskList.GetTask(uindex)
+	task, err := journal.TaskList.getTask(uindex)
 	if err != nil {
 		return err
 	}
@@ -167,7 +179,7 @@ func (journal *TaskJournal) AddOnBoard(uindex uint64) error {
 
 // RemoveFromBoard removes the specified task from board
 func (journal *TaskJournal) RemoveFromBoard(uindex uint64) error {
-	task, err := journal.TaskList.GetTask(uindex)
+	task, err := journal.TaskList.getTask(uindex)
 	if err != nil {
 		return err
 	}
@@ -175,6 +187,7 @@ func (journal *TaskJournal) RemoveFromBoard(uindex uint64) error {
 	return nil
 }
 
+// CreateTestJournal creates a dummy journal for test purposes
 func CreateTestJournal() TaskJournal {
 	journal := TaskJournal{
 		TaskList: TaskArray{

@@ -66,7 +66,9 @@ func CreateTestTask(uindex int, text string) Task {
 }
 
 // =========================================================================
-// Implementation of the collection of Tasks TaskArray
+// Implementation of the collection of Tasks TaskArray. The TaskArray is the
+// underlying data structure of a task journal. It should not be exposed output
+// from the data package.
 
 // TaskArray is the data structure for a list (array) of Tasks
 type TaskArray []Task
@@ -81,7 +83,7 @@ func (tasks TaskArray) String() string {
 }
 
 // Remove removes from the array the task of order index (index in the array)
-func (tasks *TaskArray) Remove(index int) error {
+func (tasks *TaskArray) remove(index int) error {
 	if index < 0 || index >= len(*tasks) {
 		return fmt.Errorf("ERR: index %d is out of range of tasks", index)
 	}
@@ -91,8 +93,8 @@ func (tasks *TaskArray) Remove(index int) error {
 }
 
 // Append adds the task to the array. Returns an error if a task with same uid exists
-func (tasks *TaskArray) Append(task Task) error {
-	ptask, err := tasks.GetTask(task.UIndex)
+func (tasks *TaskArray) append(task Task) error {
+	ptask, err := tasks.getTask(task.UIndex)
 	if ptask != nil && err == nil {
 		return fmt.Errorf("ERR: a task with UID %d already exists", task.UIndex)
 	}
@@ -128,7 +130,7 @@ func (tasks TaskArray) indexFromUID(uindex uint64) int {
 }
 
 // GetTask returns a pointer to the task of the sepcified UID
-func (tasks *TaskArray) GetTask(uindex uint64) (*Task, error) {
+func (tasks *TaskArray) getTask(uindex uint64) (*Task, error) {
 	idx := tasks.indexFromUID(uindex)
 	if idx == noIndex {
 		err := fmt.Errorf("The task of index %d does not exist", uindex)
@@ -138,7 +140,7 @@ func (tasks *TaskArray) GetTask(uindex uint64) (*Task, error) {
 }
 
 // GetTasksWithFilter returns an array of pointer to the tasks that satisfy the filter
-func (tasks TaskArray) GetTasksWithFilter(filter TaskFilter) []*Task {
+func (tasks TaskArray) getTasksWithFilter(filter TaskFilter) []*Task {
 	results := make([]*Task, 0, len(tasks))
 	for i := 0; i < len(tasks); i++ {
 		if filter(tasks[i]) {
@@ -158,15 +160,15 @@ func (tasks TaskArray) byTimestamp(i int, j int) bool {
 	return tasks[i].Timestamp < tasks[j].Timestamp
 }
 
-func (tasks *TaskArray) SortByUID() {
+func (tasks *TaskArray) sortByUID() {
 	sort.Slice(*tasks, tasks.byUID)
 }
 
-func (tasks *TaskArray) SortByGID() {
+func (tasks *TaskArray) sortByGID() {
 	sort.Slice(*tasks, tasks.byGID)
 }
 
-func (tasks *TaskArray) SortByTimestamp() {
+func (tasks *TaskArray) sortByTimestamp() {
 	sort.Slice(*tasks, tasks.byTimestamp)
 }
 
@@ -176,7 +178,7 @@ func (tasks TaskArray) getFreeUID() uint64 {
 	// is a list of consecutive integer indeces. If the difference between two
 	// consecutif indeces is not 1, then it means that there is at least a free
 	// index (the index that follows the smallest index of the difference).
-	tasks.SortByUID()
+	tasks.sortByUID()
 	if len(tasks) == 0 {
 		return 1
 	}
@@ -195,7 +197,7 @@ func (tasks TaskArray) ancestor(childID uint64, parentID uint64) bool {
 	if childID == parentID {
 		return false
 	}
-	task, _ := tasks.GetTask(childID)
+	task, _ := tasks.getTask(childID)
 	if task.ParentID == noUID {
 		return false
 	}

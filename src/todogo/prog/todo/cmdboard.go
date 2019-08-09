@@ -55,7 +55,7 @@ func clearBoard() error {
 	if err != nil {
 		return err
 	}
-	tasksOnBoard := journal.TaskList.GetTasksWithFilter(data.TaskFilterOnBoard)
+	tasksOnBoard := journal.GetTasksWithFilter(data.TaskFilterOnBoard)
 	for i := 0; i < len(tasksOnBoard); i++ {
 		tasksOnBoard[i].OnBoard = false
 	}
