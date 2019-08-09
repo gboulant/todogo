@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
-	"todogo/core"
+	"fmt"
 )
 
 // commandNew is the arguments command of the command new
@@ -29,6 +29,6 @@ func commandNew(cmdname string, args []string) error {
 	if err != nil {
 		return err
 	}
-	core.Println(task)
+	fmt.Println(task.String())
 	return nil
 }

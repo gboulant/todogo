@@ -17,7 +17,7 @@ func commandConfig(cmdname string, args []string) error {
 	flagset.StringVar(&newName, "n", "", help)
 
 	var path string
-	help = "path of the root directory of the context (to be used with option -n)"
+	help = "When creating a context (-n), use this option to specify the path of the root directory"
 	flagset.StringVar(&path, "p", "", help)
 
 	var removeName string
@@ -31,6 +31,10 @@ func commandConfig(cmdname string, args []string) error {
 	var selectName string
 	help = "Select the context with name=string as the active context"
 	flagset.StringVar(&selectName, "s", "", help)
+
+	var info bool
+	help = "Print all information concerning the configuration"
+	flagset.BoolVar(&info, "i", false, help)
 
 	flagset.Parse(args)
 
@@ -49,6 +53,10 @@ func commandConfig(cmdname string, args []string) error {
 
 	if removeName != "" {
 		return removeContext(removeName)
+	}
+
+	if info {
+		return printConfigInfo()
 	}
 
 	if len(flagset.Args()) > 0 {
@@ -130,4 +138,8 @@ func removeContext(name string) error {
 		fmt.Println(config.String())
 	}
 	return err
+}
+
+func printConfigInfo() error {
+	return errors.New("NO IMPLEMENTED YET")
 }

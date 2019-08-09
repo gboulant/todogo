@@ -105,7 +105,7 @@ func (journal *TaskJournal) LoadOrCreate(filepath string) error {
 // SaveTo writes the journal data to the given file.
 // It implements the jsonable interface.
 func (journal *TaskJournal) SaveTo(filepath string) error {
-	bytes, err := json.MarshalIndent(journal, core.JsonPrefix, core.JsonIndent)
+	bytes, err := json.MarshalIndent(journal, core.JSONPrefix, core.JSONIndent)
 	if err != nil {
 		return err
 	}

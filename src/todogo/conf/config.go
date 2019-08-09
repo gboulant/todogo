@@ -101,7 +101,7 @@ func (config *Config) Load(filepath string) error {
 // SaveTo writes the Config data into a json file.
 // It implements the jsonable interface.
 func (config *Config) SaveTo(filepath string) error {
-	bytes, err := json.MarshalIndent(*config, core.JsonPrefix, core.JsonIndent)
+	bytes, err := json.MarshalIndent(*config, core.JSONPrefix, core.JSONIndent)
 	if err != nil {
 		return err
 	}

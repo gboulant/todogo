@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 )
 
+// LoadBytes loads the content of the specified file and return it as an array
+// of bytes.
 func LoadBytes(fpath string) ([]byte, error) {
 	file, err := os.Open(fpath)
 	if err != nil {
@@ -17,6 +19,7 @@ func LoadBytes(fpath string) ([]byte, error) {
 	return bytes, err
 }
 
+// WriteBytes writes the given array of bytes to the specified file content.
 func WriteBytes(fpath string, bytes []byte) error {
 	err := CheckAndMakeDir(filepath.Dir(fpath))
 	if err != nil {

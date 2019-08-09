@@ -23,6 +23,7 @@ func ColorString(text string, color ColorIndex) string {
 	return fmt.Sprintf("\033[1;%dm%s\033[1;0m", color, text)
 }
 
+// Enumeration of possible pretty characters
 const (
 	PrettyDiskVoid string = "\u25cb"
 	PrettyDiskHalf string = "\u25d0"

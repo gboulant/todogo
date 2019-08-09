@@ -1,10 +1,10 @@
 package core
 
-import "fmt"
-
 // -----------------------------------------------------------------
 // Definition of the jsonable interface
 
+// Jsonable specifies the interface to be implemented by any structure to be
+// serialized to a json file.
 type Jsonable interface {
 	Load(filepath string) error
 	File() string
@@ -12,8 +12,11 @@ type Jsonable interface {
 	SaveTo(filepath string) error
 }
 
-const JsonPrefix string = ""
-const JsonIndent string = "    "
+// Constant parameters for pretty presentation of json body
+const (
+	JSONPrefix string = ""
+	JSONIndent string = "    "
+)
 
 // Load reads a json file and maps the data to the jsonable container. The
 // container should implements the Jsonable interface.
@@ -25,18 +28,4 @@ func Load(filepath string, container Jsonable) error {
 // container should implements the Jsonable interface.
 func Save(filepath string, container Jsonable) error {
 	return container.SaveTo(filepath)
-}
-
-// -----------------------------------------------------------------
-// Definition of the stringable interface
-
-type Stringable interface {
-	String() string
-}
-
-func String(data Stringable) string {
-	return data.String()
-}
-func Println(data Stringable) {
-	fmt.Println(data.String())
 }
