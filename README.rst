@@ -4,3 +4,7 @@ basic features of the go langage. The resulting application can be
 used of course but could not fit your own way to manage todo list.
 
 * `Userguide<doc/userguide.rst>`_
+
+External hyperlinks, like Python_.
+
+.. _Python: http://www.python.org/ 
