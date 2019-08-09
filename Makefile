@@ -37,6 +37,7 @@ doc/api:
 
 docbuild: doc/api
 	@GOPATH=${GOPATH} godoc -html todogo/core > ./doc/api/core.html
+	@GOPATH=${GOPATH} godoc -html todogo/conf > ./doc/api/conf.html
 	@GOPATH=${GOPATH} godoc -html todogo/data > ./doc/api/data.html
 
 docview: docbuild
