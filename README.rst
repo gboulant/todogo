@@ -7,4 +7,4 @@ used of course but could not fit your own way to manage todo list.
 
 .. _Userguide: doc/userguide.rst
 
-* `Userguide<doc/userguide.rst>`_
+* `Userguide<doc/userguide.rst>`
