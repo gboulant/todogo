@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"todogo/core"
 	"todogo/data"
 )
 
@@ -15,9 +14,9 @@ func commandBoard(cmdname string, args []string) error {
 	flagset.BoolVar(&clear, "c", false, "Clear all the tasks from the board")
 	var list bool
 	flagset.BoolVar(&list, "l", false, "List all the tasks on board")
-	var add core.IndexList
+	var add data.TaskIDArray
 	flagset.Var(&add, "a", "Add on board the specified tasks (comma separeted list of indeces)")
-	var remove core.IndexList
+	var remove data.TaskIDArray
 	flagset.Var(&remove, "r", "Remove from board the specified tasks (comma separeted list of indeces)")
 
 	flagset.Parse(args)
@@ -69,7 +68,7 @@ func clearBoard() error {
 	return nil
 }
 
-func addOnBoard(indeces core.IndexList) error {
+func addOnBoard(indeces data.TaskIDArray) error {
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err
@@ -85,7 +84,7 @@ func addOnBoard(indeces core.IndexList) error {
 	return journal.Save()
 }
 
-func removeFromBoard(indeces core.IndexList) error {
+func removeFromBoard(indeces data.TaskIDArray) error {
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err

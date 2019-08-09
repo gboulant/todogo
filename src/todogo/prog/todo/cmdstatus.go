@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"todogo/core"
 	"todogo/data"
 )
 
@@ -12,9 +11,9 @@ import (
 func commandStatus(cmdname string, args []string) error {
 	flagset := flag.NewFlagSet(cmdname, flag.ExitOnError)
 
-	var next core.IndexList
+	var next data.TaskIDArray
 	flagset.Var(&next, "n", "Change to their next status the specified tasks (comma separated list of indices)")
-	var prev core.IndexList
+	var prev data.TaskIDArray
 	flagset.Var(&prev, "p", "Change to their previous status the specified tasks (comma separated list of indices)")
 
 	flagset.Parse(args)
@@ -40,7 +39,7 @@ func modifierPrevious(task *data.Task) error {
 	return task.Status.Previous()
 }
 
-func modifyStatus(indeces core.IndexList, modifier statusModifier) error {
+func modifyStatus(indeces data.TaskIDArray, modifier statusModifier) error {
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err

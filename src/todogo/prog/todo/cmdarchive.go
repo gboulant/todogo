@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"todogo/core"
+	"todogo/data"
 )
 
 // commandArchive is the arguments parser of the command archive
@@ -12,9 +12,9 @@ func commandArchive(cmdname string, args []string) error {
 
 	var list bool
 	flagset.BoolVar(&list, "l", false, "List the tasks of the archive")
-	var add core.IndexList
+	var add data.TaskIDArray
 	flagset.Var(&add, "a", "Archive the specified tasks (comma separated list of indeces)")
-	var restore core.IndexList
+	var restore data.TaskIDArray
 	flagset.Var(&restore, "r", "Restore the specified tasks (comma separated list of indeces)")
 
 	flagset.Parse(args)
@@ -41,7 +41,7 @@ func listArchive() error {
 	return nil
 }
 
-func moveToArchive(indeces core.IndexList) error {
+func moveToArchive(indeces data.TaskIDArray) error {
 	archive, err := getActiveArchive()
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func moveToArchive(indeces core.IndexList) error {
 	return journal.Save()
 }
 
-func restoreFromArchive(indeces core.IndexList) error {
+func restoreFromArchive(indeces data.TaskIDArray) error {
 	archive, err := getActiveArchive()
 	if err != nil {
 		return err

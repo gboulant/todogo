@@ -3,17 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"todogo/core"
+	"todogo/data"
 )
 
 // commandChild is the arguments parser of the command child
 func commandChild(cmdname string, args []string) error {
 	flagset := flag.NewFlagSet(cmdname, flag.ExitOnError)
 
-	var children core.IndexList
+	var children data.TaskIDArray
 	flagset.Var(&children, "c", "List of children tasks (comma separated list of indeces)")
-	var parent uint64
-	flagset.Uint64Var(&parent, "p", 0, "Index of the parent task")
+	var parent data.TaskID
+	flagset.Var(&parent, "p", "Index of the parent task")
 
 	flagset.Parse(args)
 
@@ -24,7 +24,7 @@ func commandChild(cmdname string, args []string) error {
 	return nil
 }
 
-func addChildren(parentUID uint64, children core.IndexList) error {
+func addChildren(parentUID data.TaskID, children data.TaskIDArray) error {
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err

@@ -33,7 +33,7 @@ func (journal *TaskJournal) New(text string) *Task {
 
 // Delete removes the task with the specified id. Returns a copy of the deleted
 // task on success
-func (journal *TaskJournal) Delete(uindex uint64) (Task, error) {
+func (journal *TaskJournal) Delete(uindex TaskID) (Task, error) {
 	var task Task
 	index := journal.TaskList.indexFromUID(uindex)
 	if index == noIndex {
@@ -45,7 +45,7 @@ func (journal *TaskJournal) Delete(uindex uint64) (Task, error) {
 }
 
 // GetTask returns a pointer to the task whose usage ID is uindex
-func (journal TaskJournal) GetTask(uindex uint64) (*Task, error) {
+func (journal TaskJournal) GetTask(uindex TaskID) (*Task, error) {
 	return journal.TaskList.getTask(uindex)
 }
 
@@ -56,7 +56,7 @@ func (journal TaskJournal) GetTasksWithFilter(filter TaskFilter) []*Task {
 }
 
 // GetFreeUID returns the next free usage index in this journal
-func (journal TaskJournal) GetFreeUID() uint64 {
+func (journal TaskJournal) GetFreeUID() TaskID {
 	return journal.TaskList.getFreeUID()
 }
 
@@ -168,7 +168,7 @@ func (journal TaskJournal) String() string {
 }
 
 // AddOnBoard adds the specified task on board
-func (journal *TaskJournal) AddOnBoard(uindex uint64) error {
+func (journal *TaskJournal) AddOnBoard(uindex TaskID) error {
 	task, err := journal.TaskList.getTask(uindex)
 	if err != nil {
 		return err
@@ -178,7 +178,7 @@ func (journal *TaskJournal) AddOnBoard(uindex uint64) error {
 }
 
 // RemoveFromBoard removes the specified task from board
-func (journal *TaskJournal) RemoveFromBoard(uindex uint64) error {
+func (journal *TaskJournal) RemoveFromBoard(uindex TaskID) error {
 	task, err := journal.TaskList.getTask(uindex)
 	if err != nil {
 		return err

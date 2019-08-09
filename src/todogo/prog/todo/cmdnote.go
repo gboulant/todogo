@@ -11,18 +11,19 @@ import (
 	"os"
 	"path/filepath"
 	"todogo/core"
+	"todogo/data"
 )
 
 // commandNote is the arguments parser of the command note
 func commandNote(cmdname string, args []string) error {
 	flagset := flag.NewFlagSet(cmdname, flag.ExitOnError)
 
-	var editIndex uint64
-	flagset.Uint64Var(&editIndex, "e", 0, "Edit the note of the specified task")
-	var viewIndex uint64
-	flagset.Uint64Var(&viewIndex, "v", 0, "View the note of the specified task")
-	var delIndex uint64
-	flagset.Uint64Var(&delIndex, "d", 0, "Delete the note of the specified task")
+	var editIndex data.TaskID
+	flagset.Var(&editIndex, "e", "Edit the note of the specified task")
+	var viewIndex data.TaskID
+	flagset.Var(&viewIndex, "v", "View the note of the specified task")
+	var delIndex data.TaskID
+	flagset.Var(&delIndex, "d", "Delete the note of the specified task")
 
 	flagset.Parse(args)
 
@@ -37,7 +38,7 @@ func commandNote(cmdname string, args []string) error {
 	return errors.New("ERR: Choose an option (see usage)")
 }
 
-func editNote(index uint64) error {
+func editNote(index data.TaskID) error {
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err
@@ -84,7 +85,7 @@ func editNote(index uint64) error {
 	return journal.Save()
 }
 
-func viewNote(index uint64) error {
+func viewNote(index data.TaskID) error {
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err

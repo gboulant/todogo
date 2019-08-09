@@ -112,7 +112,7 @@ func TestTaskArrayFreeUID(t *testing.T) {
 	printlog(tasks.String())
 
 	resuid := tasks.getFreeUID()
-	refuid := uint64(3)
+	refuid := TaskID(3)
 	printlog(fmt.Sprintf("uid: %d", resuid))
 	if resuid != refuid {
 		msg := fmt.Sprintf("UID is %d (should be %d)", resuid, refuid)
@@ -122,7 +122,7 @@ func TestTaskArrayFreeUID(t *testing.T) {
 	task := CreateTestTask(3, "Organize the documentation review")
 	tasks.append(task)
 	resuid = tasks.getFreeUID()
-	refuid = uint64(6)
+	refuid = TaskID(6)
 	printlog(fmt.Sprintf("uid: %d", resuid))
 	if resuid != refuid {
 		msg := fmt.Sprintf("UID is %d (should be %d)", resuid, refuid)
@@ -156,7 +156,7 @@ func TestTaskArrayFilter(t *testing.T) {
 	}
 	ptask = tasksOnBoard[0]
 	resuid := ptask.UIndex
-	refuid := uint64(4)
+	refuid := TaskID(4)
 	if resuid != refuid {
 		msg := fmt.Sprintf("UID is %d (should be %d)", resuid, refuid)
 		t.Error(msg)
@@ -171,7 +171,7 @@ func TestTaskJournalEdit(t *testing.T) {
 
 	ptask := journal.New("Setup the automatic daily test procedure")
 	resuid := ptask.UIndex
-	refuid := uint64(5)
+	refuid := TaskID(5)
 	if resuid != refuid {
 		msg := fmt.Sprintf("UID is %d (should be %d)", resuid, refuid)
 		t.Error(msg)

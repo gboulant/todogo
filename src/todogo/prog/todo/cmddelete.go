@@ -4,17 +4,17 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"todogo/core"
+	"todogo/data"
 )
 
 // commandDelete is the arguments parser of the command delete
 func commandDelete(cmdname string, args []string) error {
 	flagset := flag.NewFlagSet(cmdname, flag.ExitOnError)
 
-	var delete core.IndexList
+	var delete data.TaskIDArray
 	flagset.Var(&delete, "d", "Delete (definitively) the specified tasks (comma separated list of indeces)")
 
-	var archive core.IndexList
+	var archive data.TaskIDArray
 	flagset.Var(&archive, "a", "Move to the archive the specified tasks (comma separated list of indeces)")
 
 	flagset.Parse(args)
@@ -30,7 +30,7 @@ func commandDelete(cmdname string, args []string) error {
 	return errors.New("ERR: At least one option should be specified (-d or -a)")
 }
 
-func deleteFromJournal(indeces core.IndexList) error {
+func deleteFromJournal(indeces data.TaskIDArray) error {
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err

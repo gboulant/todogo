@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 )
 
 type parserFunc func(cmdname string, args []string) error
@@ -105,26 +103,4 @@ func contains(sarray []string, sitem string) bool {
 		}
 	}
 	return false
-}
-
-// IndexList is a custom flag type used for a list of int
-type IndexList []uint64
-
-// String implement the flag.Value interface
-func (il *IndexList) String() string {
-	return fmt.Sprintf("%v", *il)
-}
-
-// Set implement the flag.Value interface
-func (il *IndexList) Set(value string) error {
-	sl := strings.Split(value, ",")
-	*il = make(IndexList, len(sl))
-	for i := 0; i < len(sl); i++ {
-		index, err := strconv.ParseUint(sl[i], 10, 64)
-		if err != nil {
-			return err
-		}
-		(*il)[i] = index
-	}
-	return nil
 }

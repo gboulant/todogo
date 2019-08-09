@@ -47,13 +47,6 @@ func dateInt(timestamp int64) uint64 {
 func hashdate(text string, timestamp int64) uint64 {
 	d := dateInt(timestamp)
 	h := hashInt(text)
-
-	// Implementation using a intermediate string
-	//s := fmt.Sprintf("%d%.10d", d, h)
-	//i, _ := strconv.ParseInt(s, 10, 64)
-
-	// Implementation usng an arithmetic operation
 	i := d*10000000000 + uint64(h)
-
-	return uint64(i)
+	return i
 }

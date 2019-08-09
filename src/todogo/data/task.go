@@ -4,27 +4,79 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
+	"strconv"
+	"strings"
 	"todogo/conf"
 )
 
+// =========================================================================
+// Implementation of the TaskID concept.
+//
+// The task index (or identifier) is an positive integer that identifies a task
+// in its context.
+
+// TaskID is the data type of a task index (Usage ID or General ID)
+type TaskID uint64
+
+// TaskIDArray is a list of TaskID
+type TaskIDArray []TaskID
+
 const (
-	noIndex = -1
-	noUID   = 0
+	noIndex int    = -1 // used to specify that there is no array index (whatever the array is)
+	noUID   TaskID = 0  // used to specify that there is no task index (task identifier)
 )
+
+//
+// The task indeces are used one the command lines to specify the target of
+// actions, then we give here an implementation of the flag.Value interface for
+// a list of task indeces.
+//
+func (taskID *TaskID) String() string {
+	return fmt.Sprintf("%d", *taskID)
+}
+
+// Set implement the flag.Value interface
+func (taskID *TaskID) Set(value string) error {
+	index, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return err
+	}
+	(*taskID) = TaskID(index)
+	return nil
+}
+
+// String implement the flag.Value interface
+func (il *TaskIDArray) String() string {
+	return fmt.Sprintf("%v", *il)
+}
+
+// Set implement the flag.Value interface
+func (il *TaskIDArray) Set(value string) error {
+	sl := strings.Split(value, ",")
+	*il = make(TaskIDArray, len(sl))
+	for i := 0; i < len(sl); i++ {
+		index, err := strconv.ParseUint(sl[i], 10, 64)
+		if err != nil {
+			return err
+		}
+		(*il)[i] = TaskID(index)
+	}
+	return nil
+}
 
 // =========================================================================
 // Implementation of the Task concept
 
 // Task is the data structure for a single task
 type Task struct {
-	UIndex      uint64     // Usage Index (could be recycled)
-	GIndex      uint64     // General Index (invariant and unique)
+	UIndex      TaskID     // Usage Index (could be recycled)
+	GIndex      TaskID     // General Index (invariant and unique)
 	Timestamp   int64      // Date of the task (unix format)
 	Description string     // Description of the Task
 	Status      TaskStatus // Status of the task
 	OnBoard     bool       // True if the task is on board
 	NotePath    string     // Path to the note file (relative to the db root)
-	ParentID    uint64     // UID of the parent task
+	ParentID    TaskID     // UID of the parent task
 }
 
 // initGlobalIndex initialises the global index of this task.
@@ -35,7 +87,7 @@ type Task struct {
 // tasks with the same global index.
 func (task *Task) initGlobalIndex() {
 	taskstr := fmt.Sprintf("%d [%d]: %s", task.UIndex, task.Timestamp, task.Description)
-	task.GIndex = hashdate(taskstr, task.Timestamp)
+	task.GIndex = TaskID(hashdate(taskstr, task.Timestamp))
 }
 
 // InitNotePath initializes the NotePath with the default value
@@ -53,9 +105,9 @@ func (task Task) String() string {
 }
 
 // CreateTestTask creates a dummy task for test purposes
-func CreateTestTask(uindex int, text string) Task {
+func CreateTestTask(uindex TaskID, text string) Task {
 	var task = Task{
-		UIndex:      uint64(uindex),
+		UIndex:      uindex,
 		Description: text,
 		Timestamp:   timestamp(),
 		Status:      StatusTodo,
@@ -122,7 +174,7 @@ func (tasks TaskArray) indeces(filter TaskFilter) []int {
 }
 
 // IndexFromUID returns the array index of the task with the given UID
-func (tasks TaskArray) indexFromUID(uindex uint64) int {
+func (tasks TaskArray) indexFromUID(uindex TaskID) int {
 	filterUID := func(task Task) bool {
 		return task.UIndex == uindex
 	}
@@ -130,7 +182,7 @@ func (tasks TaskArray) indexFromUID(uindex uint64) int {
 }
 
 // GetTask returns a pointer to the task of the sepcified UID
-func (tasks *TaskArray) getTask(uindex uint64) (*Task, error) {
+func (tasks *TaskArray) getTask(uindex TaskID) (*Task, error) {
 	idx := tasks.indexFromUID(uindex)
 	if idx == noIndex {
 		err := fmt.Errorf("The task of index %d does not exist", uindex)
@@ -173,7 +225,7 @@ func (tasks *TaskArray) sortByTimestamp() {
 }
 
 // getFreeUID() returns the first free UID of this tasks list.
-func (tasks TaskArray) getFreeUID() uint64 {
+func (tasks TaskArray) getFreeUID() TaskID {
 	// The free index is determined with the hypothesis that the indeces array
 	// is a list of consecutive integer indeces. If the difference between two
 	// consecutif indeces is not 1, then it means that there is at least a free
@@ -182,7 +234,7 @@ func (tasks TaskArray) getFreeUID() uint64 {
 	if len(tasks) == 0 {
 		return 1
 	}
-	var freeUID uint64 = 1
+	var freeUID TaskID = 1
 	for i := 0; i < len(tasks); i++ {
 		if tasks[i].UIndex-freeUID > 0 {
 			return freeUID
@@ -193,7 +245,7 @@ func (tasks TaskArray) getFreeUID() uint64 {
 }
 
 // ancestor returns true if parentId is an ancestor of childID
-func (tasks TaskArray) ancestor(childID uint64, parentID uint64) bool {
+func (tasks TaskArray) ancestor(childID TaskID, parentID TaskID) bool {
 	if childID == parentID {
 		return false
 	}

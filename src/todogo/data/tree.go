@@ -2,12 +2,6 @@ package data
 
 import "fmt"
 
-// TaskID is the data type of a task index (Usage ID or General ID)
-type TaskID uint64
-
-// TaskIDArray is a list of TaskID
-type TaskIDArray []TaskID
-
 // treeMap is a map whose key is a data id and the value is the list of data id.
 // This map is used to map the children data to their parents (the key is a
 // parent data id and the value is the list of ID of its children)
@@ -62,7 +56,7 @@ func TreeString(tasks TaskArray) string {
 	// nodeString is the recursive function
 	var nodeString func(taskID TaskID, tab string) string
 	nodeString = func(taskID TaskID, tab string) string {
-		idx := tasks.indexFromUID(uint64(taskID))
+		idx := tasks.indexFromUID(taskID)
 		s := fmt.Sprintf("%s%s\n", tab, tasks[idx].String())
 		_, exists := tree[taskID]
 		if !exists {
