@@ -1,7 +1,7 @@
-The todogo application is a todo list manager written with the go
-langage. The project was initiated as a training exercice to learn the
-basic features of the go langage. The resulting application can be
-used of course but could not fit your own way to manage todo list.
+================
+TODO: User guide
+================
+
 
 The standard use cases are to create and manage a personal todo
 list. For creating a new task::
