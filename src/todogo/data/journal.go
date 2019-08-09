@@ -5,6 +5,8 @@ package data
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"todogo/core"
 )
 
@@ -15,6 +17,9 @@ type TaskJournal struct {
 	TaskList TaskArray
 	filepath string
 }
+
+// =========================================================================
+// Implementation of the edition functions
 
 // New creates a new task in the database
 func (journal *TaskJournal) New(text string) *Task {
@@ -29,6 +34,11 @@ func (journal *TaskJournal) New(text string) *Task {
 	task.initGlobalIndex()
 	journal.TaskList.append(task)
 	return &task
+}
+
+// Add adds the given task to this journal
+func (journal *TaskJournal) Add(task Task) error {
+	return journal.TaskList.append(task)
 }
 
 // Delete removes the task with the specified id. Returns a copy of the deleted
@@ -60,6 +70,29 @@ func (journal TaskJournal) GetFreeUID() TaskID {
 	return journal.TaskList.getFreeUID()
 }
 
+// AddOnBoard adds the specified task on board
+func (journal *TaskJournal) AddOnBoard(uindex TaskID) error {
+	task, err := journal.TaskList.getTask(uindex)
+	if err != nil {
+		return err
+	}
+	task.OnBoard = true
+	return nil
+}
+
+// RemoveFromBoard removes the specified task from board
+func (journal *TaskJournal) RemoveFromBoard(uindex TaskID) error {
+	task, err := journal.TaskList.getTask(uindex)
+	if err != nil {
+		return err
+	}
+	task.OnBoard = false
+	return nil
+}
+
+// =========================================================================
+// Implementation of the serialization functions
+
 // Load reads a journal of tasks from the given file. Returns an error if the
 // file does not exist. Use LoadOrCreate to make sure to initialise a joournal
 // whatever the starting situation (inn the case of the first usage of todo for
@@ -75,11 +108,6 @@ func (journal *TaskJournal) Load(filepath string) error {
 	}
 	return err
 
-}
-
-// Add adds the given task to this journal
-func (journal *TaskJournal) Add(task Task) error {
-	return journal.TaskList.append(task)
 }
 
 // LoadOrCreate tries to load a journal from the given file, and create a void
@@ -126,6 +154,10 @@ func (journal *TaskJournal) Save() error {
 	return journal.SaveTo(journal.File())
 }
 
+// =========================================================================
+// Implementation of the stringable function (function creating string
+// representations of a journal)
+
 // ListWithFilter returns a string representation of the list of tasks that
 // satisfy the given filter (tasks are included in the list if the taskFilter
 // returns true).
@@ -167,25 +199,74 @@ func (journal TaskJournal) String() string {
 	return journal.List()
 }
 
-// AddOnBoard adds the specified task on board
-func (journal *TaskJournal) AddOnBoard(uindex TaskID) error {
-	task, err := journal.TaskList.getTask(uindex)
+// =========================================================================
+// Implementation of the functions to edit task features
+
+func (journal *TaskJournal) getNoteFile(uindex TaskID, create bool) (string, error) {
+	task, err := journal.GetTask(uindex)
 	if err != nil {
-		return err
+		return "", err
 	}
-	task.OnBoard = true
-	return nil
+
+	if task.NotePath == "" {
+		if !create {
+			return task.NotePath, nil
+		}
+		task.initNotePath()
+	}
+
+	var notepath string
+	if filepath.IsAbs(task.NotePath) {
+		notepath = task.NotePath
+	} else {
+		rootdir := filepath.Dir(journal.File())
+		notepath = filepath.Join(rootdir, task.NotePath)
+	}
+
+	exists, err := core.PathExists(notepath)
+	if exists && err != nil {
+		return notepath, err
+	}
+
+	if !create {
+		return notepath, nil
+	}
+
+	if !exists {
+		err := core.CheckAndMakeDir(filepath.Dir(notepath))
+		file, err := os.Create(notepath)
+		defer file.Close()
+		if err != nil {
+			return notepath, err
+		}
+		title := fmt.Sprintf("%.2d - %s", task.UIndex, task.Description)
+		line := ""
+		for i := 0; i < len(title); i++ {
+			line += "="
+		}
+		file.WriteString(fmt.Sprintf("%s\n", title))
+		file.WriteString(fmt.Sprintf("%s\n", line))
+		file.Sync()
+	}
+
+	return notepath, nil
 }
 
-// RemoveFromBoard removes the specified task from board
-func (journal *TaskJournal) RemoveFromBoard(uindex TaskID) error {
-	task, err := journal.TaskList.getTask(uindex)
-	if err != nil {
-		return err
-	}
-	task.OnBoard = false
-	return nil
+// GetNoteFile returns the filepath to the note associated to this task. Returns
+// a blank string ("") if no note is associated to this task.
+func (journal *TaskJournal) GetNoteFile(uindex TaskID) (string, error) {
+	return journal.getNoteFile(uindex, false)
 }
+
+// GetOrCreateNoteFile returns the filepath to the note associated to this task.
+// It ensures that this note exists. If it is not defined, then the function
+// creates it and return the absolute path to this note file.
+func (journal *TaskJournal) GetOrCreateNoteFile(uindex TaskID) (string, error) {
+	return journal.getNoteFile(uindex, true)
+}
+
+// =========================================================================
+// Helper functions for testing purpose
 
 // CreateTestJournal creates a dummy journal for test purposes
 func CreateTestJournal() TaskJournal {

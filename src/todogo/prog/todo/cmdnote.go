@@ -4,12 +4,9 @@ package main
 // initial not file
 
 import (
-	"bufio"
 	"errors"
 	"flag"
 	"fmt"
-	"os"
-	"path/filepath"
 	"todogo/core"
 	"todogo/data"
 )
@@ -43,42 +40,10 @@ func editNote(index data.TaskID) error {
 	if err != nil {
 		return err
 	}
-	task, err := journal.GetTask(index)
+
+	notepath, err := journal.GetOrCreateNoteFile(index)
 	if err != nil {
 		return err
-	}
-	if task.NotePath == "" {
-		task.InitNotePath()
-	}
-
-	var notepath string
-	if filepath.IsAbs(task.NotePath) {
-		notepath = task.NotePath
-	} else {
-		rootdir := filepath.Dir(journal.File())
-		notepath = filepath.Join(rootdir, task.NotePath)
-	}
-
-	exists, err := core.PathExists(notepath)
-	if exists && err != nil {
-		return err
-	}
-
-	if !exists {
-		err := core.CheckAndMakeDir(filepath.Dir(notepath))
-		file, err := os.Create(notepath)
-		defer file.Close()
-		if err != nil {
-			return err
-		}
-		title := fmt.Sprintf("%.2d - %s", task.UIndex, task.Description)
-		line := ""
-		for i := 0; i < len(title); i++ {
-			line += "="
-		}
-		file.WriteString(fmt.Sprintf("%s\n", title))
-		file.WriteString(fmt.Sprintf("%s\n", line))
-		file.Sync()
 	}
 
 	fmt.Printf("The note of the task %d can be edited in file: %s\n", index, notepath)
@@ -90,38 +55,19 @@ func viewNote(index data.TaskID) error {
 	if err != nil {
 		return err
 	}
-	task, err := journal.GetTask(index)
+
+	notepath, err := journal.GetNoteFile(index)
 	if err != nil {
 		return err
 	}
 
-	if task.NotePath == "" {
+	if notepath == "" {
 		return fmt.Errorf("ERR: the task %d has no associated note", index)
 	}
 
-	var notepath string
-	if filepath.IsAbs(task.NotePath) {
-		notepath = task.NotePath
-	} else {
-		rootdir := filepath.Dir(journal.File())
-		notepath = filepath.Join(rootdir, task.NotePath)
+	content, err := core.LoadString(notepath)
+	if err == nil {
+		fmt.Println(content)
 	}
-
-	_, err = core.PathExists(notepath)
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Open(notepath)
-	defer file.Close()
-	if err != nil {
-		return err
-	}
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-	}
-
-	return scanner.Err()
+	return err
 }

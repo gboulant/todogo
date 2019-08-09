@@ -90,8 +90,9 @@ func (task *Task) initGlobalIndex() {
 	task.GIndex = TaskID(hashdate(taskstr, task.Timestamp))
 }
 
-// InitNotePath initializes the NotePath with the default value
-func (task *Task) InitNotePath() {
+// InitNotePath initializes the NotePath with the default value (path relative
+// to the context root directory)
+func (task *Task) initNotePath() {
 	basename := fmt.Sprintf("%d.rst", task.GIndex)
 	task.NotePath = filepath.Join(conf.NotebookDirname, basename)
 }

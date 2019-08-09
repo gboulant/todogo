@@ -1,6 +1,8 @@
 package core
 
 import (
+	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -61,4 +63,22 @@ func CheckAndMakeDir(dpath string) error {
 		}
 	}
 	return nil
+}
+
+// LoadString load the content of the specified file and return it as a string
+func LoadString(fpath string) (string, error) {
+	file, err := os.Open(fpath)
+	defer file.Close()
+	if err != nil {
+		return "", err
+	}
+
+	s := ""
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		s += fmt.Sprintln(scanner.Text())
+	}
+
+	return s, scanner.Err()
+
 }
