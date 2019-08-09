@@ -2,11 +2,9 @@ package data
 
 import (
 	"fmt"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
-	"todogo/conf"
 )
 
 // =========================================================================
@@ -88,13 +86,6 @@ type Task struct {
 func (task *Task) initGlobalIndex() {
 	taskstr := fmt.Sprintf("%d [%d]: %s", task.UIndex, task.Timestamp, task.Description)
 	task.GIndex = TaskID(hashdate(taskstr, task.Timestamp))
-}
-
-// InitNotePath initializes the NotePath with the default value (path relative
-// to the context root directory)
-func (task *Task) initNotePath() {
-	basename := fmt.Sprintf("%d.rst", task.GIndex)
-	task.NotePath = filepath.Join(conf.NotebookDirname, basename)
 }
 
 // String implements the stringable interface

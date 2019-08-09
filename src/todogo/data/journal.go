@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"todogo/conf"
 	"todogo/core"
 )
 
@@ -212,7 +213,10 @@ func (journal *TaskJournal) getNoteFile(uindex TaskID, create bool) (string, err
 		if !create {
 			return task.NotePath, nil
 		}
-		task.initNotePath()
+		// initializes the NotePath with the default value (path relative to the
+		// context root directory)
+		basename := fmt.Sprintf("%d.rst", task.GIndex)
+		task.NotePath = filepath.Join(conf.NotebookDirname, basename)
 	}
 
 	var notepath string
