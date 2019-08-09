@@ -7,4 +7,4 @@ used of course but could not fit your own way to manage todo list.
 
 External hyperlinks, like Python_.
 
-.. _Python: http://www.python.org/ 
+.. _Python: doc/userguide.rst
