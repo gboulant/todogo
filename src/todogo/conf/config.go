@@ -53,6 +53,14 @@ type Parameters struct {
 	WithColor bool
 }
 
+func (parameters Parameters) String() string {
+	bytes, err := json.MarshalIndent(parameters, core.JSONPrefix, core.JSONIndent)
+	if err != nil {
+		panic(err)
+	}
+	return string(bytes)
+}
+
 // Config defines the configuration of todo application. A configuration
 // contains a list of contexts and the specification of the activze context.
 type Config struct {
@@ -150,7 +158,7 @@ func (config *Config) GetActiveContext() *Context {
 	return config.ContextList.getContext(config.ContextName)
 }
 
-// RemoveContext removes the context with the given name from the configuration.
+// RemoveContext removes the context of given name from the configuration.
 // This operation does not delete the workspace associated to the context.
 func (config *Config) RemoveContext(name string) error {
 	if name == defaultContextName {
@@ -199,12 +207,17 @@ var renderingFunctionMap = map[bool]renderingFunction{
 
 // String implements the stringable interface for a Config
 func (config Config) String() string {
-	symbol := dotSymbolMap[config.Parameters.PrettyPrint]
-	clrfun := renderingFunctionMap[config.Parameters.WithColor]
-	return config.createString(symbol, clrfun)
+	return config.InfoString()
 }
 
-func (config Config) createString(dotSymbol string, renderingFunc renderingFunction) string {
+// ContextsString returns a pretty string representation of the list of contexts
+func (config Config) ContextsString() string {
+	symbol := dotSymbolMap[config.Parameters.PrettyPrint]
+	clrfun := renderingFunctionMap[config.Parameters.WithColor]
+	return config.createContextsString(symbol, clrfun)
+}
+
+func (config Config) createContextsString(dotSymbol string, renderingFunc renderingFunction) string {
 	s := "\n"
 	for i := 0; i < len(config.ContextList); i++ {
 		context := config.ContextList[i]
@@ -215,6 +228,35 @@ func (config Config) createString(dotSymbol string, renderingFunc renderingFunct
 		}
 	}
 	s += fmt.Sprintf("\nLegend: %s\n", renderingFunc(dotSymbol+" active context"))
+	return s
+}
+
+// InfoString returns a plain string representation of this configuration
+func (config Config) InfoString() string {
+	s := "\n"
+
+	// Configuration files
+	s += "Configuration files:\n"
+	s += "-------------------\n\n"
+	s += fmt.Sprintf(" Configuration root directory: %s\n", cfgdirpath)
+	s += fmt.Sprintf(" Configuration file path     : %s\n", cfgfilepath)
+	s += "\n"
+
+	// Configuration Parameters
+	s += "Configuration parameters:\n"
+	s += "------------------------\n\n"
+	s += fmt.Sprintf("%s\n", config.Parameters.String())
+	s += "\n"
+
+	// List of contexts
+	s += "List of contexts:\n"
+	s += "----------------\n"
+	s += config.createContextsString(dotSymbolMap[false], renderingFunctionMap[false])
+	s += "\n"
+
+	s += "!! NOTE: apart form the management of the contexts (create, remove, select),\n"
+	s += "!! there is no todo command to edit the configuration (up to now). If you need\n"
+	s += "!! to modify the configuration, you should directly edit the configuration file.\n"
 	return s
 }
 

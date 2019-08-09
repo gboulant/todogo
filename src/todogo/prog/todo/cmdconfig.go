@@ -64,15 +64,24 @@ func commandConfig(cmdname string, args []string) error {
 		return errors.New(msg)
 	}
 
-	return listContexts()
+	return printContextsList()
 }
 
-func listContexts() error {
+func printContextsList() error {
 	config, err := conf.GetConfig()
 	if err != nil {
 		return err
 	}
-	fmt.Println(config.String())
+	fmt.Println(config.ContextsString())
+	return nil
+}
+
+func printConfigInfo() error {
+	config, err := conf.GetConfig()
+	if err != nil {
+		return err
+	}
+	fmt.Println(config.InfoString())
 	return nil
 }
 
@@ -138,8 +147,4 @@ func removeContext(name string) error {
 		fmt.Println(config.String())
 	}
 	return err
-}
-
-func printConfigInfo() error {
-	return errors.New("NO IMPLEMENTED YET")
 }
