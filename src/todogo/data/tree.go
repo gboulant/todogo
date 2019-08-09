@@ -79,7 +79,7 @@ func TreeString(tasks TaskArray) string {
 	}
 
 	stree := ""
-	noParentTaskIDs := tree[noUID]
+	noParentTaskIDs := tree[NoUID]
 	for k := 0; k < len(noParentTaskIDs); k++ {
 		stree += nodeString(noParentTaskIDs[k], tabstart)
 	}

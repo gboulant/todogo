@@ -1,10 +1,12 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
+	"todogo/core"
 )
 
 // =========================================================================
@@ -20,8 +22,10 @@ type TaskID uint64
 type TaskIDArray []TaskID
 
 const (
-	noIndex int    = -1 // used to specify that there is no array index (whatever the array is)
-	noUID   TaskID = 0  // used to specify that there is no task index (task identifier)
+	// noIndex is used to specify that there is no array index (whatever the array is)
+	noIndex int = -1
+	// NoUID is used to specify that there is no task index (task identifier)
+	NoUID TaskID = 0
 )
 
 //
@@ -88,12 +92,31 @@ func (task *Task) initGlobalIndex() {
 	task.GIndex = TaskID(hashdate(taskstr, task.Timestamp))
 }
 
-// String implements the stringable interface
+// String returns a string representation of this task
 func (task Task) String() string {
+	return task.OnelineString()
+}
+
+// OnelineString returns a string representation of this task on one signe line.
+// This shouldbe used for a pretty presentation of task lists.
+func (task Task) OnelineString() string {
 	dtlabel := datelabel(task.Timestamp)
 	template := "%2d [%s] %s : %s"
 	s := fmt.Sprintf(template, task.UIndex, dtlabel, task.Status.String(), task.Description)
 	return s
+}
+
+// JSONString returns a json string representation of this tassk
+func (task Task) JSONString() string {
+	bytes, err := json.MarshalIndent(task, core.JSONPrefix, core.JSONIndent)
+	if err != nil {
+		panic(err)
+	}
+	return string(bytes)
+}
+
+func (task Task) InfoString() string {
+	return task.JSONString()
 }
 
 // CreateTestTask creates a dummy task for test purposes
@@ -242,7 +265,7 @@ func (tasks TaskArray) ancestor(childID TaskID, parentID TaskID) bool {
 		return false
 	}
 	task, _ := tasks.getTask(childID)
-	if task.ParentID == noUID {
+	if task.ParentID == NoUID {
 		return false
 	}
 	if task.ParentID == parentID {

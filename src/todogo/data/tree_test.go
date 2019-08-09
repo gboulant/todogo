@@ -7,20 +7,20 @@ import (
 
 func createTreeTaskArray() TaskArray {
 	tasks := TaskArray{
-		Task{UIndex: 30, Description: "A", ParentID: noUID},
-		Task{UIndex: 31, Description: "B", ParentID: noUID},
-		Task{UIndex: 32, Description: "C", ParentID: noUID},
-		Task{UIndex: 4, Description: "A.1", ParentID: noUID},
-		Task{UIndex: 5, Description: "A.2", ParentID: noUID},
-		Task{UIndex: 6, Description: "A.3", ParentID: noUID},
-		Task{UIndex: 7, Description: "B.1", ParentID: noUID},
-		Task{UIndex: 8, Description: "B.2", ParentID: noUID},
-		Task{UIndex: 9, Description: "C.1", ParentID: noUID},
-		Task{UIndex: 10, Description: "C.2", ParentID: noUID},
-		Task{UIndex: 11, Description: "B.2.1", ParentID: noUID},
-		Task{UIndex: 12, Description: "B.2.2", ParentID: noUID},
-		Task{UIndex: 13, Description: "B.2.2.1", ParentID: noUID},
-		Task{UIndex: 14, Description: "D", ParentID: noUID},
+		Task{UIndex: 30, Description: "A", ParentID: NoUID},
+		Task{UIndex: 31, Description: "B", ParentID: NoUID},
+		Task{UIndex: 32, Description: "C", ParentID: NoUID},
+		Task{UIndex: 4, Description: "A.1", ParentID: NoUID},
+		Task{UIndex: 5, Description: "A.2", ParentID: NoUID},
+		Task{UIndex: 6, Description: "A.3", ParentID: NoUID},
+		Task{UIndex: 7, Description: "B.1", ParentID: NoUID},
+		Task{UIndex: 8, Description: "B.2", ParentID: NoUID},
+		Task{UIndex: 9, Description: "C.1", ParentID: NoUID},
+		Task{UIndex: 10, Description: "C.2", ParentID: NoUID},
+		Task{UIndex: 11, Description: "B.2.1", ParentID: NoUID},
+		Task{UIndex: 12, Description: "B.2.2", ParentID: NoUID},
+		Task{UIndex: 13, Description: "B.2.2.1", ParentID: NoUID},
+		Task{UIndex: 14, Description: "D", ParentID: NoUID},
 	}
 
 	taskFromText := func(description string) *Task {

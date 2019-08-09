@@ -1,8 +1,5 @@
 package main
 
-// TODO: encapsulate all that stuff of creating the tree folders and the
-// initial not file
-
 import (
 	"errors"
 	"flag"
