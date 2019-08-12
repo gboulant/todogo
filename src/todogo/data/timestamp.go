@@ -10,8 +10,10 @@ import (
 const (
 	layoutISO     = "2006-01-02"
 	layoutUS      = "January 2, 2006"
+	layoutUSshort = "2006-Jan-02"
+	layoutUSlong  = "2006-Jan-02 15:04:05 Mon"
 	layoutInt     = "20060102"
-	layoutDefault = layoutISO
+	layoutDefault = layoutUSshort
 )
 
 // timestamp returns the current date (now) in unix format

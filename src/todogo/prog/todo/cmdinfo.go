@@ -30,11 +30,11 @@ func printTaskInfo(uindex data.TaskID) error {
 		return err
 	}
 
-	task, err := journal.GetTask(uindex)
+	info, err := journal.GetTaskInfo(uindex)
 	if err != nil {
 		return err
 	}
-	fmt.Println(task.InfoString())
+	fmt.Println(info)
 
 	return nil
 }

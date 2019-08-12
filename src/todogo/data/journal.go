@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 	"todogo/conf"
 	"todogo/core"
 )
@@ -58,6 +59,34 @@ func (journal *TaskJournal) Delete(uindex TaskID) (Task, error) {
 // GetTask returns a pointer to the task whose usage ID is uindex
 func (journal TaskJournal) GetTask(uindex TaskID) (*Task, error) {
 	return journal.TaskList.getTask(uindex)
+}
+
+// GetTaskInfo returns a string representation of the charateristics of this
+// task. This is the journal that creates this string and not the task itself,
+// so that we can use absolute paths
+func (journal TaskJournal) GetTaskInfo(uindex TaskID) (string, error) {
+	task, err := journal.TaskList.getTask(uindex)
+	if err != nil {
+		return "", err
+	}
+
+	datelabel := func(timestamp int64) string {
+		return time.Unix(timestamp, 0).Format("Monday 2006-January-02 at 15:04:05")
+	}
+
+	notepath, _ := journal.getNoteFile(uindex, false)
+
+	s := ""
+	s += fmt.Sprintf("Task               : %s\n", task.Description)
+	s += fmt.Sprintf("Usage Index  (UID) : %d\n", task.UIndex)
+	s += fmt.Sprintf("Global Index (GID) : %d\n", task.GIndex)
+	s += fmt.Sprintf("Creation Date      : %s\n", datelabel(task.Timestamp))
+	s += fmt.Sprintf("Status             : %s\n", task.Status.Label())
+	s += fmt.Sprintf("Is on board        : %v\n", task.OnBoard)
+	s += fmt.Sprintf("Note filepath      : %s\n", notepath)
+	s += fmt.Sprintf("Parent UID         : %d", task.ParentID)
+
+	return s, nil
 }
 
 // GetTasksWithFilter returns an array of pointer to the tasks that satisfy the

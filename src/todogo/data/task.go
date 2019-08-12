@@ -72,7 +72,7 @@ func (il *TaskIDArray) Set(value string) error {
 // Task is the data structure for a single task
 type Task struct {
 	UIndex      TaskID     // Usage Index (could be recycled)
-	GIndex      TaskID     // General Index (invariant and unique)
+	GIndex      TaskID     // Global Index (invariant and unique)
 	Timestamp   int64      // Date of the task (unix format)
 	Description string     // Description of the Task
 	Status      TaskStatus // Status of the task
@@ -106,7 +106,7 @@ func (task Task) OnelineString() string {
 	return s
 }
 
-// JSONString returns a json string representation of this tassk
+// JSONString returns a json string representation of this task
 func (task Task) JSONString() string {
 	bytes, err := json.MarshalIndent(task, core.JSONPrefix, core.JSONIndent)
 	if err != nil {
@@ -115,6 +115,7 @@ func (task Task) JSONString() string {
 	return string(bytes)
 }
 
+// InfoString returns a string representation of the task attributes
 func (task Task) InfoString() string {
 	return task.JSONString()
 }
