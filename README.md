@@ -29,7 +29,7 @@ Want to discover? Have a look to the user documentation:
 
 * [Userguide](doc/userguide.rst)
 
-For a rapid overview, the usage message below give you the existing features:
+For a rapid overview, the usage message below lists the existing features:
 
 ``` shell
 $ todo -h
