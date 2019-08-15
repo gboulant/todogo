@@ -1,6 +1,9 @@
 package data
 
-import "fmt"
+import (
+	"fmt"
+	"todogo/core"
+)
 
 // treeMap is a map whose key is a data id and the value is the list of data id.
 // This map is used to map the children data to their parents (the key is a
@@ -42,8 +45,9 @@ func TreeString(tasks TaskArray) string {
 	// parent) and then create a string reresentation of the children tree using
 	// a recurcive function nodeString
 
-	const tabindent = "    "
-	const tabchild = " └──"
+	const tabindent = "   "
+	//const tabchild = " └─"
+	const tabchild = " └" + core.PrettyArrowRight
 	const tabstart = ""
 	startIndent := func(size int) string {
 		s := ""

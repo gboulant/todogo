@@ -32,4 +32,8 @@ const (
 
 	PrettyTriangleRight string = "\u25b6"
 	PrettyCross         string = "\u274c"
+
+	PrettyArrowRightShort string = "\u27f6"
+	PrettyArrowRightLong  string = "\u27ff"
+	PrettyArrowRight      string = PrettyArrowRightShort
 )
