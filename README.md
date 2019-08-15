@@ -25,7 +25,11 @@ Legend: ○ todo  ▶ doing  ● done
 
 ```
 
-The whole set of possible command is:
+Want to discover? Have a look to the user documentation:
+
+* [Userguide](doc/userguide.rst)
+
+For a rapid overview, the usage message below give you the existing features:
 
 ``` shell
 $ todo -h
@@ -46,7 +50,3 @@ With <command> in:
 
 For a description of possible options, try: todo <command> -h
 ```
-
-Want to discover? Have a look to the user documentation:
-
-* [Userguide](doc/userguide.rst)
