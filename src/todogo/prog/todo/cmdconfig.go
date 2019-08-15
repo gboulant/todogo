@@ -109,7 +109,7 @@ func createOrUptadeContext(name string, path string) error {
 
 	err = config.Save()
 	if err == nil {
-		fmt.Println(config.String())
+		fmt.Println(config.ContextsString())
 	}
 	return err
 }
@@ -127,7 +127,7 @@ func selectContext(name string) error {
 
 	err = config.Save()
 	if err == nil {
-		fmt.Println(config.String())
+		fmt.Println(config.ContextsString())
 	}
 	return err
 }
@@ -144,7 +144,7 @@ func removeContext(name string) error {
 
 	err = config.Save()
 	if err == nil {
-		fmt.Println(config.String())
+		fmt.Println(config.ContextsString())
 	}
 	return err
 }
