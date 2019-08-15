@@ -24,8 +24,8 @@ test:
 	@GOPATH=${GOPATH} go test -v todogo/data
 
 clean:
-	rm -f ./todo ./demo *~ out.*
-	rm -f src/todogo/data/out.*
+	rm -f ./todo ./demo
+	find . -name "*~" -o -name "out.*" | xargs rm -f
 	rm -rf ./pkg ./bin ./doc/api
 
 edit:
