@@ -219,8 +219,13 @@ func (journal TaskJournal) Tree() string {
 	if len(journal.TaskList) == 0 {
 		return fmt.Sprint("\nNo tasks. Go have a drink\n\n")
 	}
-	s := fmt.Sprintln()
-	s += TreeString(journal.TaskList)
+	s := ""
+	tree := TreeString(journal.TaskList)
+	if tree[0] != '\n' {
+		// We add a line return for a pretty look
+		s += fmt.Sprintln()
+	}
+	s += tree
 	s += fmt.Sprintf("\nLegend: %s  %s  %s\n", StatusTodo.legend(), StatusDoing.legend(), StatusDone.legend())
 	return s
 }

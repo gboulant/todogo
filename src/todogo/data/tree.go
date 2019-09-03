@@ -2,7 +2,6 @@ package data
 
 import (
 	"fmt"
-	"todogo/core"
 )
 
 // treeMap is a map whose key is a data id and the value is the list of data id.
@@ -45,9 +44,10 @@ func TreeString(tasks TaskArray) string {
 	// parent) and then create a string reresentation of the children tree using
 	// a recurcive function nodeString
 
+	const groupsep = "\n" // group separator (a group is a task that has no parent and has children)
 	const tabindent = "   "
-	//const tabchild = " └─"
-	const tabchild = " └" + core.PrettyArrowRight
+	const tabchild = " └─"
+	//const tabchild = " └" + core.PrettyArrowRight
 	const tabstart = ""
 	startIndent := func(size int) string {
 		s := ""
@@ -64,6 +64,7 @@ func TreeString(tasks TaskArray) string {
 		s := fmt.Sprintf("%s%s\n", tab, tasks[idx].String())
 		_, exists := tree[taskID]
 		if !exists {
+			// This task has no child
 			return s
 		}
 		children := tree[taskID]
@@ -71,7 +72,11 @@ func TreeString(tasks TaskArray) string {
 			return s
 		}
 		if tab == tabstart {
+			// It is a project task (task with no parent AND with children
+			// tasks), then (1) the tabulation of children is starting with a
+			// startIndent and (2) we add a groupsep to the main task.
 			tab = startIndent + tabchild
+			s = groupsep + s
 		} else {
 			tab = tabindent + tab
 		}
