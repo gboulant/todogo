@@ -3,6 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"time"
+	"todogo/conf"
 	"todogo/data"
 )
 
@@ -14,12 +17,39 @@ func commandList(cmdname string, args []string) error {
 	flagset.BoolVar(&board, "b", false, "List only the tasks on board")
 	var tree bool
 	flagset.BoolVar(&tree, "t", false, "Tree representation of parent relations")
+	var filepath string
+	flagset.StringVar(&filepath, "f", "", "Print the listing in the specified file")
 
 	flagset.Parse(args)
 
 	journal, err := getActiveJournal()
 	if err != nil {
 		return err
+	}
+
+	config, err := conf.GetConfig()
+	if err != nil {
+		return err
+	}
+
+	// If the output is a file, then we deactivate temporarely the color
+	// rendering
+	var printlist func(text string) (int, error)
+	colorflag := config.Parameters.WithColor
+	if filepath == "" {
+		// Print listing on the standard output
+		printlist = func(text string) (int, error) {
+			return fmt.Println(text)
+		}
+	} else {
+		// Print listing in a file. We add a header with the date, and
+		// deactivate the color rendering
+		printlist = func(text string) (int, error) {
+			dlabel := time.Unix(time.Now().Unix(), 0).Format("Monday, January 2, 2006")
+			header := fmt.Sprintf("TODO list at %s:\n", dlabel)
+			return printfile(filepath, header+text)
+		}
+		config.Parameters.WithColor = false
 	}
 
 	var listing string
@@ -32,6 +62,18 @@ func commandList(cmdname string, args []string) error {
 			listing = journal.List()
 		}
 	}
-	fmt.Println(listing)
-	return nil
+
+	_, err = printlist(listing)
+	config.Parameters.WithColor = colorflag
+	return err
+}
+
+func printfile(filepath string, text string) (int, error) {
+	fw, err := os.Create(filepath)
+	defer fw.Close()
+	if err != nil {
+		return 0, err
+	}
+	n, err := fw.WriteString(text)
+	return n, err
 }
