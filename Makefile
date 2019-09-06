@@ -14,6 +14,7 @@ install:
 
 deploy: install
 	install ./bin/todo ${PREFIX}/bin/.
+	install ./adm/todo-completion.sh ${PREFIX}/etc/.
 
 test:
 	@echo "=== Testing the package todogo/core ..."
