@@ -7,7 +7,7 @@ import (
 func TestDateLabel(t *testing.T) {
 	timestamp := int64(1563794667) // July 22, 2019
 	timelabel := datelabel(timestamp)
-	reference := "2019-07-22"
+	reference := "2019-Jul-22"
 	if timelabel != reference {
 		t.Errorf("timelabel is %s (should be %s)", timelabel, reference)
 	}
