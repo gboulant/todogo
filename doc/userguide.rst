@@ -3,7 +3,7 @@ TODO: User guide
 ================
 
 
-The standard use cases are to create and manage a personal todo
+The todo application can help you to create and manage a personal todo
 list. For creating a new task::
 
    $ todo new -t "Write the documentation of todogo"
@@ -18,8 +18,8 @@ todo list::
    $ todo new -t "Create a beautiful web site for todogo"
     3 [2019-07-27]  todo: Create a beautiful web site for todogo
 
-Each task is assigned a usage index (1,2,3) to refer to them in the
-folowing use cases. Then you can have a look on the whole todo list::
+Each task is assigned a usage index (1,2,3) to refer to them. Then you
+can have a look on the whole todo list::
 
    $ todo list
     1 [2019-07-27]  todo: Write the documentation of todogo
