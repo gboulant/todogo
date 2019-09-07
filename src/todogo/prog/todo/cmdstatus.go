@@ -15,6 +15,8 @@ func commandStatus(cmdname string, args []string) error {
 	flagset.Var(&next, "n", "Change to their next status the specified tasks (comma separated list of indices)")
 	var prev data.TaskIDArray
 	flagset.Var(&prev, "p", "Change to their previous status the specified tasks (comma separated list of indices)")
+	var info data.TaskIDArray
+	flagset.Var(&info, "i", "Display the complete status of the specified tasks (comma separated list of indices)")
 
 	flagset.Parse(args)
 
@@ -23,6 +25,9 @@ func commandStatus(cmdname string, args []string) error {
 	}
 	if len(prev) > 0 {
 		return modifyStatus(prev, modifierPrevious)
+	}
+	if len(info) > 0 {
+		return infoStatus(info)
 	}
 
 	flagset.Usage()
@@ -59,4 +64,23 @@ func modifyStatus(indeces data.TaskIDArray, modifier statusModifier) error {
 		}
 	}
 	return journal.Save()
+}
+
+func infoStatus(indeces data.TaskIDArray) error {
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
+	fmt.Println()
+	for _, uindex := range indeces {
+		info, err := journal.GetTaskInfo(uindex)
+		if err != nil {
+			msg := fmt.Sprintf("WRN: no info for the task %d (%s)", uindex, err)
+			fmt.Println(msg)
+		} else {
+			fmt.Println(info)
+		}
+		fmt.Println()
+	}
+	return nil
 }

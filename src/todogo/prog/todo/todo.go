@@ -18,7 +18,6 @@ var commands = core.CommandList{
 	{Name: "delete", Description: "Delete tasks (definitely or in archive)", Parser: commandDelete},
 	{Name: "archive", Description: "Archive/Restore tasks", Parser: commandArchive},
 	{Name: "config", Description: "Manage de configuration", Parser: commandConfig},
-	{Name: "info", Description: "Print detailled information on a task", Parser: commandInfo},
 }
 
 func main() {
