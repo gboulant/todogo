@@ -13,33 +13,35 @@
    </p>
    </div>
 
-==============
-Creating tasks
-==============
+========================
+Creating tasks - ``new``
+========================
 
 The todo application can help you to create and manage a personal todo
-list. For creating a new task::
+list. For creating a new task:
 
-   $ todo new -t "Write the documentation of todogo"
-    1 [2019-07-27]  todo: Write the documentation of todogo
+.. code:: shell
+
+   guillaume@mercure:~$ todo new -t "Write the documentation of todogo"
+    1 [2019-Sep-07] ○ : Write the documentation of todogo
 
 The todo task is created with usage index 1. You may complete your
 todo list:
 
 .. code:: shell
 
-   $ todo new -t "Write the unit tests of todogo"
-    2 [2019-07-27]  todo: Write the unit tests of todogo
+   guillaume@mercure:~$ todo new -t "Write the unit tests of todogo"
+    2 [2019-Sep-07] ○ : Write the unit tests of todogo
 
-   $ todo new -t "Create a beautiful web site for todogo"
-    3 [2019-07-27]  todo: Create a beautiful web site for todogo
+   guillaume@mercure:~$ todo new -t "Create a beautiful web site for todogo"
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
 
-Each task is assigned a usage index (1,2,3) to refer to them in the
-folowing use cases.
+Each task is assigned a usage index (1,2,3) to refer to them with the
+command line (no mouse to click)
 
-=================
-Listing the tasks
-=================
+============================
+Listing the tasks - ``list``
+============================
 
 Then you can have a look on the whole todo list:
 
