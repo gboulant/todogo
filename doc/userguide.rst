@@ -149,3 +149,4 @@ its status to the previous one in the sequence (the status "doing")::
 
    $ todo status -p 4
     4 [2019-07-27] doing: Write the documentation of todogo
+
