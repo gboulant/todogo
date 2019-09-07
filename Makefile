@@ -1,7 +1,7 @@
 GOPATH=$(shell echo $$GOPATH:`pwd`)
 PREFIX ?= /usr/local
 
-all: install
+all: build
 
 demobuild:
 	GOPATH=${GOPATH} go build todogo/prog/demo
@@ -9,10 +9,10 @@ demobuild:
 demo: demobuild
 	./demo
 
-install:
+build:
 	GOPATH=${GOPATH} go install todogo/prog/todo
 
-deploy: install
+install: build
 	install ./bin/todo ${PREFIX}/bin/.
 	install ./adm/todo-completion.sh ${PREFIX}/etc/.
 

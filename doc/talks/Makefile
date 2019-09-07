@@ -1,6 +1,6 @@
 
-#OPTIONS=--self-contained --mathml
-OPTIONS=--standalone --mathjax
+OPTIONS=--self-contained --mathml
+#OPTIONS=--standalone --mathjax
 
 RST2HTML=pandoc ${OPTIONS} --css=./css/pandoc.css -t slidy
 

@@ -1,8 +1,9 @@
 :title: TODOGO - Quick start guide
-:author: Guillaume Boulant (EDF/R&D)
+:author: Guillaume Boulant (gboulant@gmail.com)
 :date: Sept. 2019
 :description: Quick start guide for TODOGO
-
+:email: gboulant@gmail.com
+   
 -------------
 
 .. raw:: html
@@ -92,8 +93,8 @@ The listing display for each task:
 Task on board - ``board``
 =========================
 
-This week you plan to work on the documentation (task 1) and the web
-site (task 3), then you can star these tasks by putting them on the
+*"This week you plan to work on the documentation (task 1) and the web
+site (task 3)"*, then you can star these tasks by putting them on the
 board:
 
 .. code:: shell
@@ -117,9 +118,9 @@ And list the tasks on board to focus on the actuality:
 Task life cycle - ``status``
 ============================
 
-You start by writing some documentation and want to point that the
-task is in progress, then you specify that you jump to the next status of
-this task 1 (the status *doing*):
+*"You start by writing some documentation and want to point that the
+task is in progress"*, then you specify that you jump to the next
+status of this task 1 (the status *doing*):
 
 .. code:: shell
 
@@ -217,7 +218,7 @@ And the archive contains:
    Legend: ○ todo  ▶ doing  ● done
 
 Note that when a task is moved to the archive, then its usage index is
-modified and set to its absolute index.
+modified and set to its global index (see next page).
 
 ================
 Task identifiers
@@ -228,7 +229,7 @@ Usage index versus global index
 
 When created, a task is characterized by:
 
-* a **usage index** (UID), the index seen by the user to manipulate the task
+* a **usage index** (UID), the index seen by the user to manipulate the tasks
 * a **global index** (GID), the index used by the program to manage the tasks
 
 .. code:: shell
@@ -246,8 +247,8 @@ When created, a task is characterized by:
 
 Index life cycle:
   
-* The absolute index is unique and invariant ever
-* The usage index of a task is unique and invariant as long as the
+* The global index (GID) is unique and invariant ever
+* The usage index (UID) is unique and invariant as long as the
   task is in the journal
 * Once a task is move from the journal to the archive, its usage index
   is released and can be reused for a new task.
@@ -266,7 +267,7 @@ We create a new task:
    $ todo new -t "Make it possible to have children tasks associated to a task"
     1 [2019-Sep-07] ○ : Make it possible to have children tasks associated to a task
 
-As you can see, the usage index 1, previously attributed to the
+Note that the usage index 1, previously attributed to the
 documentation task (moved to the archive) has been recycled and
 attributed to this newly created task:
 
@@ -292,8 +293,8 @@ attributed to this newly created task:
 Restoring a task
 ================
 
-We forgot a part of the documentation, but the task is declared as
-done and archived:
+*"We forgot a part of the documentation, but the task is declared as
+done and archived"*. Indeed:
 
 .. code:: shell
 
@@ -310,11 +311,10 @@ The task can be restored to the journal:
    $ todo archive -r 201909074112222239
    Task 201909074112222239 restored from archive with a new usage index: 4
 
-As you can see, the task has been restored from the archive (where its
-index was 201909074112222239, i.e. the global index) to the journal
-with a new usage index 4 (of course the original index 1 has been
-reassigned to another task and the first free usage index in the
-journal is 4):
+The task has been restored from the archive (where its index was
+201909074112222239, i.e. the global index) to the journal with a new
+usage index 4 (of course the original index 1 has been reassigned to
+another task and the first free usage index in the journal is 4):
 
 .. code:: shell
 
@@ -340,7 +340,7 @@ Organizing the tasks - ``board``
 ================================
 
 As with all todo list, the tasks accumulate in the journal as they
-came in your brain:
+came out of your brain:
 
 .. code:: shell
 
@@ -447,6 +447,10 @@ representation of the tasks with the option ``-t`` of the command
 
    Legend: ○ todo  ▶ doing  ● done
 
+Note that there is no limit in the depth of the tree relashionship but
+it is a good practice to have 2 or 3 levels maximum (one level only in
+this example).
+   
 ==================================
 Organizing the tasks - ``context``
 ==================================
@@ -454,8 +458,8 @@ Organizing the tasks - ``context``
 Different workspaces for different contexts
 ===========================================
 
-I would need to manage a todo list for my sport association, but I
-don't want to mix them up with my job todo list.
+*"I would need to manage a todo list for my sport association, but I
+don't want to mix them up with my job todo list"*.
 
 todogo defines the concept of **context** to manage this situation. A
 context is a named workspace where the journal of tasks is
@@ -487,7 +491,7 @@ Organizing the tasks - ``context``
 Creating a context
 ==================
 
-Creating a new context named ``sport``:
+Creating a new context with the name ``sport``:
 
 .. code:: shell
    
@@ -503,7 +507,7 @@ Creating a new context named ``sport``:
 
 The context sport is automatically set as the active context. The todo
 list of this new created context is empty and ready to register your
-association todo list:
+sport todo list:
 
 .. code:: shell
 
@@ -533,8 +537,8 @@ Organizing the tasks - ``context``
 Selecting an active context
 ===========================
 
-Hey! But where is my job todo list? The job todo list was created with
-the demo context, and you currently point to the sport context:
+*"Hey! But where is my job todo list?"* The job todo list was created
+with the demo context, and you currently point to the sport context:
 
 .. code:: shell
 
@@ -584,7 +588,7 @@ associated to a task and that you can edit to put information in
 it. These files are stored in the workspace associated to the
 context.
 
-I am back to the sport context:
+Let's go back to the sport context:
 
 .. code:: shell
 
@@ -596,8 +600,7 @@ I am back to the sport context:
 
    Legend: ○ todo  ▶ doing  ● done
 
-And I want to add some details concerning the inscription form (task
-3):
+And add some details concerning the inscription form (task 3):
 
 .. code:: shell
 
@@ -605,10 +608,10 @@ And I want to add some details concerning the inscription form (task
    The note of the task 3 can be edited in file:
    /home/guillaume/.config/galuma/todogo/sport/notes/201909073921949778.rst
 
-A text file is created in the sport context workspace with the task
-global id (GID) as base name. Todogo does not provide the function to
-edit this file, and you may choose your prefered editor to write the
-content:
+A text file is created in the sport context workspace with a base name
+created from the task global id (GID). Todogo does not provide the
+function to edit this file, and you may choose your prefered editor to
+write the content:
 
 .. code:: shell
 
@@ -617,7 +620,7 @@ content:
 .. note:: **Note**: this limitation is applied on purpose, due to the
    requirement to not use any external sofware program from
    todogo. The main reason is that the external software programs
-   could not be installed on you host. Personnaly I would prefer to
+   could be not installed on you host. Personnaly I would prefer to
    choose my prefered editor (``vi`` of course), and creating a
    parameter in the todogo configuration for that is too much job for
    very low benefit.
@@ -740,10 +743,10 @@ Good practice
 
 The usage of a remote git repository can be usefull:
 
+* It could be considered as a backup of your data
 * You may synchronize your todo lists on all your computers
-* You may share the todo lists with other users. It is posible even if
-  it is not a feature of todogo, which is a personal todo list
-  manager.
+* You may share the todo lists with other users, even if it is not a
+  feature of todogo, which is a personal todo list manager.
 
 ===============================
 Configuring Todogo - ``config``
@@ -838,8 +841,8 @@ Or in a pdf file (just by changing the output file extension):
 
 .. note:: **Note**: this last command is the only exception to the
    requierment to not use external programs. The pdf output is created
-   here using the cipsfilter program, a very low level program that is
-   installed on every linux system.
+   here using the ``cupsfilter`` program, a low level program which is
+   installed on most linux systems.
 	    
 
 .. raw:: html
@@ -858,17 +861,47 @@ Or in a pdf file (just by changing the output file extension):
    </p>
    </div>
 
-===================
-Download the source
-===================
+======================================
+Download the source and install todogo
+======================================
+
+The todogo application (``todo`` program) is written with the langage
+go (https://golang.org). You first need to install go and basic
+development tools (git, make). You are supposed here to be sudoers or
+to be able to make this software programs installed on your hosts:
 
 .. code:: shell
 
-   sss
+   $ sudo apt-get install git
+   $ sudo apt-get install make
+   $ sudo apt-get install golang
 
-==================
-Docker installtion
-==================
+Then you can clone the source files and build the ``todo`` executable
+program:
+
+.. code:: shell
+
+   $ git clone https://github.com/gboulant/todogo.git
+   $ cd todogo
+   $ make
+   $ make test
+   $ sudo make install
+
+This last command install the executable program ``todo`` in the
+``$PREFIX/bin`` where PREFIX default to ``/usr/local``.
+
+If you need to install todogo in another folder, replace with:
+
+.. code:: shell
+   
+   $ PREFIX=/path/to/my/installdir make install
+
+If ``/usr/local/bin`` (more generally ``$PREFIX/bin``) is in your
+PATH, then you are ready to start with todogo.
+
+===================
+Docker installation
+===================
 
 .. code:: docker
 
@@ -885,7 +918,6 @@ Docker installtion
    RUN git clone https://github.com/gboulant/todogo.git && \
        cd todogo && make install
 
-   
 -------------
 
 .. raw:: html
@@ -893,6 +925,7 @@ Docker installtion
    <div align="center" style="padding-top: 20%; padding-left:20%; padding-right:20%">
    <h1 style="margin-left: 0; margin-right: 0">03 - Technical design</h1>
    <p style="margin-left: 0; margin-right: 0">
+   Work in progress!
    </p>
    </div>
 
