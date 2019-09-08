@@ -145,3 +145,78 @@ Note that todogo defines three possible status:
 ``▶ doing``: the task is started and is in progress
 
 ``● done``: the task is achieved
+
+============================
+Task life cycle - ``status``
+============================
+
+You achieved the task 1:
+
+.. code::
+
+   $ todo status -n 1
+    1 [2019-Sep-07] ● : Write the documentation of todogo
+
+You can now get rid of this task from the board:
+
+.. code:: shell
+
+   $ todo board -r 1
+   Task of index 1 has been removed from board
+
+The task is always in the todo list (with status done), but no longer
+on the board:
+
+.. code:: shell
+
+   $ todo list
+   
+    1 [2019-Sep-07] ● : Write the documentation of todogo
+    2 [2019-Sep-07] ○ : Write the unit tests of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    
+   Legend: ○ todo  ▶ doing  ● done
+
+   $ todo board
+
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    
+   Legend: ○ todo  ▶ doing  ● done
+   
+=============================
+Archiving tasks - ``archive``
+=============================
+
+If you register and then finish a lot of tasks, they could accumulate
+in your todo list, with increasing indeces. A good practice is then to
+archive the done tasks:
+
+.. code:: shell
+
+   $ todo archive -a 1
+   Task 1 moved to the archive with a new usage index: 201909074112222239
+
+Then the todo list is now:
+
+.. code:: shell
+
+   $ todo list
+  
+    2 [2019-Sep-07] ○ : Write the unit tests of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+
+   Legend: ○ todo  ▶ doing  ● done
+
+And the archive contains:
+
+.. code:: shell
+
+   $ todo archive
+
+   201909074112222239 [2019-Sep-07] ● : Write the documentation of todogo
+   
+   Legend: ○ todo  ▶ doing  ● done
+
+Note that when a task is moved to the archive, then its usage index is
+modified and set to its global index (see next page).
+
