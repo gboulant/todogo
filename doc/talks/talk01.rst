@@ -574,3 +574,95 @@ And retrieve your job todo list:
 
    Legend: ○ todo  ▶ doing  ● done
 
+==========================
+Annoting a task - ``note``
+==========================
+
+Sometimes, you need to complete a task description with some
+additional pieces of information.
+
+todogo defines the concept of **note** to manage this
+situation. Technically speaking, a note is a plain text file
+associated to a task and that you can edit to put information in
+it. These files are stored in the workspace associated to the
+context.
+
+Let's go back to the sport context:
+
+.. code:: shell
+
+   $ todo list
+
+    1 [2019-Sep-07] ○ : Buy a new equipement
+    2 [2019-Sep-07] ○ : Make the medical certificate
+    3 [2019-Sep-07] ○ : Fill in the inscription form
+
+   Legend: ○ todo  ▶ doing  ● done
+
+And add some details concerning the inscription form (task 3):
+
+.. code:: shell
+
+   $ todo note -e 3
+   The note of the task 3 can be edited in file:
+   /home/guillaume/.config/galuma/todogo/sport/notes/201909073921949778.rst
+
+A text file is created in the sport context workspace with a base name
+created from the task global id (GID). Todogo does not provide the
+function to edit this file, and you may choose your prefered editor to
+write the content:
+
+.. code:: shell
+
+   $ vi /home/guillaume/.config/galuma/todogo/sport/notes/201909073921949778.rst
+
+.. note:: **Note**: this limitation is applied on purpose, due to the
+   requirement to not use any external sofware program from
+   todogo. The main reason is that the external software programs
+   could be not installed on you host. Personnaly I would prefer to
+   choose my prefered editor (``vi`` of course), and creating a
+   parameter in the todogo configuration for that is too much job for
+   very low benefit.
+
+==========================
+Annoting a task - ``note``
+==========================
+   
+Once you have written some text into the note file, you can print the
+content:
+
+.. code:: shell
+   
+   $ todo note -v 3
+   03 - Fill in the inscription form
+   =================================
+   
+   The fee for the inscription form is 230€ (to be payed using the RIB XXX).
+   The contact to get detailled information is Mme C. Coule.
+   The date of the first training session is 15 of september.
+
+If you don't remember the filepath of this note file, just type the
+edit command (``note -e``):
+
+.. code:: shell
+
+   $ todo note -e 3
+   The note of the task 3 can be edited in file:
+   /home/guillaume/.config/galuma/todogo/sport/notes/201909073921949778.rst
+ 
+Alternativelly, you may print the metadata of the task using the
+``status -i`` command:
+
+.. code:: shell
+
+   $ todo status -i 3
+
+   Task               : Fill in the inscription form
+   Usage Index  (UID) : 3
+   Global Index (GID) : 201909073921949778
+   Creation Date      : Saturday 2019-September-07 at 19:11:13
+   Status             : todo
+   Is on board        : false
+   Note filepath      : /home/guillaume/.config/galuma/todogo/sport/notes/201909073921949778.rst
+   Parent UID         : 0
+
