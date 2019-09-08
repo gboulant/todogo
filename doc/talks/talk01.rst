@@ -751,7 +751,7 @@ The usage of a remote git repository can be usefull:
 Configuring Todogo - ``config``
 ===============================
 
-Let's have a look into the configuration file:
+Let's have a look into the configuration file ``$HOME/.config/galuma/todogo/config.json``:
 
 .. code:: json
 
@@ -815,3 +815,131 @@ Rendering parameters
   |I4|       **PrettyPrint** = false, **WithColor** = false
 =========== ================================================
 
+=============================
+Exporting tasks in a pdf file
+=============================
+
+For printing the todo list on paper, it could be convenient to create
+a pdf file from the listing. The output of the command ``todo list``
+can be saved either in a text plain file:
+
+.. code:: shell
+
+   $ todo list -t -f todo.txt
+   The todo list has been printed in the txt file: todo.txt
+
+Or in a pdf file (just by changing the output file extension):   
+
+.. code:: shell
+
+   $ todo list -t -f todo.pdf
+   The todo list has been printed in the txt file: todo.txt
+   INFO: texttopdf (PID 16805) started.
+   INFO: texttopdf (PID 16805) exited with no errors.
+   The todo list has been printed in the pdf file: todo.pdf
+
+.. note:: **Note**: this last command is the only exception to the
+   requierment to not use external programs. The pdf output is created
+   here using the ``cupsfilter`` program, a low level program which is
+   installed on most linux systems.
+	    
+
+.. raw:: html
+
+   <p align="center">
+   <img height="360px" src="img/docu.todo.list.exportpdf.png">
+   </p>
+
+-------------
+
+.. raw:: html
+
+   <div align="center" style="padding-top: 20%; padding-left:20%; padding-right:20%">
+   <h1 style="margin-left: 0; margin-right: 0">02 - Getting started</h1>
+   <p style="margin-left: 0; margin-right: 0">
+   </p>
+   </div>
+
+======================================
+Download the source and install todogo
+======================================
+
+The todogo application (``todo`` program) is written with the langage
+go (https://golang.org). You first need to install go and basic
+development tools (git, make). You are supposed here to be sudoers or
+to be able to make this software programs installed on your hosts:
+
+.. code:: shell
+
+   $ sudo apt-get install git
+   $ sudo apt-get install make
+   $ sudo apt-get install golang
+
+Then you can clone the source files and build the ``todo`` executable
+program:
+
+.. code:: shell
+
+   $ git clone https://github.com/gboulant/todogo.git
+   $ cd todogo
+   $ make
+   $ make test
+   $ sudo make install
+
+This last command install the executable program ``todo`` in the
+``$PREFIX/bin`` where PREFIX default to ``/usr/local``.
+
+If you need to install todogo in another folder, replace with:
+
+.. code:: shell
+   
+   $ PREFIX=/path/to/my/installdir make install
+
+If ``/usr/local/bin`` (more generally ``$PREFIX/bin``) is in your
+PATH, then you are ready to start with todogo.
+
+===================
+Docker installation
+===================
+
+.. code:: docker
+
+   FROM ubuntu
+
+   RUN apt-get update && apt-get upgrade -y && \
+       apt-get install -y sudo && \
+       apt-get install -y vim && \
+       apt-get install -y git && \
+       apt-get install -y make
+
+   RUN apt-get install -y golang
+
+   RUN git clone https://github.com/gboulant/todogo.git && \
+       cd todogo && make install
+
+-------------
+
+.. raw:: html
+
+   <div align="center" style="padding-top: 20%; padding-left:20%; padding-right:20%">
+   <h1 style="margin-left: 0; margin-right: 0">03 - Technical design</h1>
+   <p style="margin-left: 0; margin-right: 0">
+   Work in progress!
+   </p>
+   </div>
+
+============
+Requirements
+============
+
+Functional requirements:
+
+* Fit my personal usage with paper board
+* no sophistaced features, that are never generally never used
+   
+Requirements:
+
+* Command line application to work in a shell terminal
+* Database made of local files only (no network connection required)
+* Written in pure go, without external dependency (neither go packages
+  nor external shell programs)
