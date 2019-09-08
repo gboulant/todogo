@@ -746,3 +746,44 @@ The usage of a remote git repository can be usefull:
 * You may synchronize your todo lists on all your computers
 * You may share the todo lists with other users, even if it is not a
   feature of todogo, which is a personal todo list manager.
+
+===============================
+Configuring Todogo - ``config``
+===============================
+
+Let's have a look into the configuration file:
+
+.. code:: json
+
+   {
+       "ContextName": "sport",
+       "ContextList": [
+           {
+               "DirPath": "default",
+               "Name": "default"
+           },
+           {
+               "DirPath": "demo",
+               "Name": "demo"
+           },
+           {
+	       "DirPath": "sport",
+               "Name": "sport"
+           }
+       ],
+       "Parameters": {
+            "DefaultCommand": "board",
+            "PrettyPrint": true,
+            "WithColor": true
+       }
+   }
+
+The parameters that you may change:
+
+* ``DefaultCommand``: the default command when you execute ``todo``
+  with no arguments
+* ``PrettyPrint``: if true, use pretty symbols when listing
+  information (tasks, config)
+* ``WithColor``: if true, colorized the listing (task status in
+  particular).
+
