@@ -666,3 +666,83 @@ Alternativelly, you may print the metadata of the task using the
    Note filepath      : /home/guillaume/.config/galuma/todogo/sport/notes/201909073921949778.rst
    Parent UID         : 0
 
+===============================
+Configuring Todogo - ``config``
+===============================
+
+A complete information concerning the configuration of the Todogo
+program can be printed using:
+
+.. code:: shell
+   
+   $ todo config -i
+   
+   Configuration files:
+   -------------------
+   
+   Configuration root directory: /home/guillaume/.config/galuma/todogo
+   Configuration file path     : /home/guillaume/.config/galuma/todogo/config.json
+
+   Configuration parameters:
+   ------------------------
+   
+   {
+       "DefaultCommand": "board",
+       "PrettyPrint": true,
+       "WithColor": true
+   }
+   
+   List of contexts:
+   ----------------
+   
+     default : /home/guillaume/.config/galuma/todogo/default
+     demo    : /home/guillaume/.config/galuma/todogo/demo
+   * sport   : /home/guillaume/.config/galuma/todogo/sport
+
+   Legend: * active context
+
+* The configuration is stored in a directory whose path is hard coded
+  in todogo as: ``$HOME/.config/galume/todogo``.
+* This directory is created at first todo execution if not exists.
+* The configuration file is ``config.json`` at the root of the
+  configuration directory.
+
+===============================
+Configuring Todogo - ``config``
+===============================
+   
+To keep in mind
+---------------
+
+* Apart for the management of the contexts (create, remove, select),
+  there is no todo command to edit the configuration. If you need to
+  modify the configuration, you should directly edit the configuration
+  file ``config.json`` (it is a command line tool, no?)
+* The default location path of a context with name ``<mycontext>`` is
+  ``<configdir>/<mycontext>``, i.e. a subdirectory of the
+  configuration folder. But you may choose any path for a context when
+  you create one (see options of the command ``todo config -n``.
+
+Good practice
+-------------
+
+* It is a good practice to keep the history of your todo lists and the
+  whole configuration directory using a git repository.
+* Then we strongly advise to choose the default path when creating a
+  context so that the whole set of data files is stored into the
+  configuration directory.
+
+.. code:: shell
+
+   $ cd $HOME/.config/galuma/todogo
+   $ git init
+   $ git add *
+   $ git commit -m "Initial import"
+   $ git push # if you have defined a remote repository
+
+The usage of a remote git repository can be usefull:
+
+* It could be considered as a backup of your data
+* You may synchronize your todo lists on all your computers
+* You may share the todo lists with other users, even if it is not a
+  feature of todogo, which is a personal todo list manager.
