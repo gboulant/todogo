@@ -2,6 +2,12 @@
 TODO: User guide
 ================
 
+.. code:: shell
+
+   1 [2019-Sep-07] ○ : Write the documentation of todogo
+   2 [2019-Sep-07] ○ : Write the unit tests of todogo
+   3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+
 
 The todo application can help you to create and manage a personal todo
 list. For creating a new task::
