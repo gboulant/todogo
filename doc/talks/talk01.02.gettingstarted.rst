@@ -28,7 +28,7 @@ program:
 
 .. code:: shell
 
-   $ git clone https://github.com/gboulant/todogo.git
+   $ git clone https://gitlab.galuma.net/guiboule/todogo.git
    $ cd todogo
    $ make
    $ make test
@@ -50,18 +50,20 @@ PATH, then you are ready to start with todogo.
 Docker installation
 ===================
 
+This minimalist docker file can be used to create an ubuntu image
+containing an installation of todogo. It is created only to show and
+test the minimal software configuration required to work with todogo:
+
 .. code:: docker
 
    FROM ubuntu
 
    RUN apt-get update && apt-get upgrade -y && \
-       apt-get install -y sudo && \
-       apt-get install -y vim && \
        apt-get install -y git && \
        apt-get install -y make
 
    RUN apt-get install -y golang
 
-   RUN git clone https://github.com/gboulant/todogo.git && \
+   RUN git clone https://gitlab.galuma.net/guiboule/todogo.git && \
        cd todogo && make install
 
