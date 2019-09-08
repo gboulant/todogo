@@ -27,26 +27,4 @@ Legend: ○ todo  ▶ doing  ● done
 
 Want to discover? Have a look to the user documentation:
 
-* [Userguide](doc/userguide.rst)
-
-For a rapid overview, the usage message below lists the existing features:
-
-``` shell
-$ todo -h
-usage: todo <command> [<options>] [<arguments>]
-
-With <command> in:
-
-* new       : Create a new task
-* list      : Print the list of tasks
-* status    : Change the status of tasks
-* board     : Append/Remove tasks on/from the board
-* note      : Edit/View the note associated to a task
-* child     : Make tasks be children of a parent task
-* delete    : Delete tasks (definitely or in archive)
-* archive   : Archive/Restore tasks
-* config    : Manage de configuration and the contexts
-* info      : Print detailled information on a task
-
-For a description of possible options, try: todo <command> -h
-```
+* [Userguide](doc/talk/talk01.rst)

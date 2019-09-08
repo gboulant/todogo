@@ -10,8 +10,7 @@
 
    <div align="center" style="padding-top: 20%; padding-left:20%; padding-right:20%">
    <h1 style="margin-left: 0; margin-right: 0">01 - Userguide</h1>
-   <p style="margin-left: 0; margin-right: 0">
-   </p>
+   <p style="margin-left: 0; margin-right: 0"></p>
    </div>
 
 ========
@@ -247,7 +246,9 @@ When created, a task is characterized by:
 
 Index life cycle:
   
-* The global index (GID) is unique and invariant ever
+* The global index (GID) is unique and invariant ever. It is defined
+  as a concatenation of a date flag YYYYMMDD and a sha1 of the task
+  metadata.
 * The usage index (UID) is unique and invariant as long as the
   task is in the journal
 * Once a task is move from the journal to the archive, its usage index
@@ -856,8 +857,7 @@ Or in a pdf file (just by changing the output file extension):
 
    <div align="center" style="padding-top: 20%; padding-left:20%; padding-right:20%">
    <h1 style="margin-left: 0; margin-right: 0">02 - Getting started</h1>
-   <p style="margin-left: 0; margin-right: 0">
-   </p>
+   <p style="margin-left: 0; margin-right: 0"></p>
    </div>
 
 ======================================
@@ -923,9 +923,7 @@ Docker installation
 
    <div align="center" style="padding-top: 20%; padding-left:20%; padding-right:20%">
    <h1 style="margin-left: 0; margin-right: 0">03 - Technical design</h1>
-   <p style="margin-left: 0; margin-right: 0">
-   Work in progress!
-   </p>
+   <p style="margin-left: 0; margin-right: 0">Work in progress!</p>
    </div>
 
 ============
