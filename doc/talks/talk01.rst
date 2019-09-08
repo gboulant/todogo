@@ -484,3 +484,49 @@ The listing indicates that:
 * The paths specify the workspace directories of the contexts   
 * The context demo is the current active context
 
+==================================
+Organizing the tasks - ``context``
+==================================
+
+Creating a context
+==================
+
+Creating a new context with the name ``sport``:
+
+.. code:: shell
+   
+   $ todo config -n sport
+   WRN: You did't specify the context path. Default to sport
+   Creating the context sport with path sport
+
+     default : /home/guillaume/.config/galuma/todogo/default
+     demo    : /home/guillaume/.config/galuma/todogo/demo
+   ● sport   : /home/guillaume/.config/galuma/todogo/sport
+
+   Legend: ● active context
+
+The context sport is automatically set as the active context. The todo
+list of this new created context is empty and ready to register your
+sport todo list:
+
+.. code:: shell
+
+   $ todo list
+
+   No tasks. Go have a drink
+
+   $ todo new -t "Buy a new equipement"
+    1 [2019-Sep-07] ○ : Buy a new equipement
+   $ todo new -t "Make the medical certificate"
+    2 [2019-Sep-07] ○ : Make the medical certificate
+   $ todo new -t "Fill in the inscription form"
+    3 [2019-Sep-07] ○ : Fill in the inscription form
+
+   $ todo list
+
+    1 [2019-Sep-07] ○ : Buy a new equipement
+    2 [2019-Sep-07] ○ : Make the medical certificate
+    3 [2019-Sep-07] ○ : Fill in the inscription form
+
+   Legend: ○ todo  ▶ doing  ● done
+
