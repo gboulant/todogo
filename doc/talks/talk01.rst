@@ -792,7 +792,7 @@ Configuring Todogo - ``config``
 ===============================
 
 Rendering parameters
---------------------
+====================
 
 .. |I1| image:: img/docu.todo.list.prettycolor.png 
         :width: 800px
