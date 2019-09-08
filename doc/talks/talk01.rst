@@ -220,3 +220,118 @@ And the archive contains:
 Note that when a task is moved to the archive, then its usage index is
 modified and set to its global index (see next page).
 
+================
+Task identifiers
+================
+
+Usage index versus global index
+===============================
+
+When created, a task is characterized by:
+
+* a **usage index** (UID), the index seen by the user to manipulate the tasks
+* a **global index** (GID), the index used by the program to manage the tasks
+
+.. code:: shell
+
+   $ todo status -i 2
+
+   Task               : Write the unit tests of todogo
+   Usage Index  (UID) : 2
+   Global Index (GID) : 201909070743126602
+   Creation Date      : Saturday 2019-September-07 at 16:04:08
+   Status             : todo
+   Is on board        : false
+   Note filepath      : 
+   Parent UID         : 0
+
+Index life cycle:
+  
+* The global index (GID) is unique and invariant ever
+* The usage index (UID) is unique and invariant as long as the
+  task is in the journal
+* Once a task is move from the journal to the archive, its usage index
+  is released and can be reused for a new task.
+
+================
+Task identifiers
+================
+
+Usage index recycling
+=====================
+
+We create a new task:
+
+.. code::
+
+   $ todo new -t "Make it possible to have children tasks associated to a task"
+    1 [2019-Sep-07] ○ : Make it possible to have children tasks associated to a task
+
+Note that the usage index 1, previously attributed to the
+documentation task (moved to the archive) has been recycled and
+attributed to this newly created task:
+
+.. code::
+
+   $ todo list
+
+    2 [2019-Sep-07] ○ : Write the unit tests of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    1 [2019-Sep-07] ○ : Make it possible to have children tasks associated to a task
+
+   Legend: ○ todo  ▶ doing  ● done
+
+.. note:: **Note**: The reason of this index recycling is to avoid
+   increasing indeces, at least in the journal listing, so that you
+   can refer to reasonably short indeces when typing your command
+   line. Even if there is no maximum limit for indeces, the normal
+   usage (i.e. if you achieve your tasks and archive them when
+   finished) is to play whith indeces between 1 (the starting index
+   value) to 20 or 30.
+
+================
+Restoring a task
+================
+
+*"We forgot a part of the documentation, but the task is declared as
+done and archived"*. Indeed:
+
+.. code:: shell
+
+   $ todo archive
+
+   201909074112222239 [2019-Sep-07] ● : Write the documentation of todogo
+
+   Legend: ○ todo  ▶ doing  ● done
+
+The task can be restored to the journal:
+
+.. code:: shell
+
+   $ todo archive -r 201909074112222239
+   Task 201909074112222239 restored from archive with a new usage index: 4
+
+The task has been restored from the archive (where its index was
+201909074112222239, i.e. the global index) to the journal with a new
+usage index 4 (of course the original index 1 has been reassigned to
+another task and the first free usage index in the journal is 4):
+
+.. code:: shell
+
+   $ todo list
+
+    1 [2019-Sep-07] ○ : Make it possible to have children tasks associated to a task
+    2 [2019-Sep-07] ○ : Write the unit tests of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    4 [2019-Sep-07] ● : Write the documentation of todogo
+    
+   Legend: ○ todo  ▶ doing  ● done
+
+The restored task is on status done, and it could be relevant to move
+its status to the previous one in the life cycle (the status "doing"):
+
+.. code:: shell
+
+   $ todo status -p 4
+    4 [2019-Sep-07] ▶ : Write the documentation of todogo
+
