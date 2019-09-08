@@ -787,3 +787,31 @@ The parameters that you may change:
 * ``WithColor``: if true, colorized the listing (task status in
   particular).
 
+===============================
+Configuring Todogo - ``config``
+===============================
+
+Rendering parameters
+--------------------
+
+.. |I1| image:: img/docu.todo.list.prettycolor.png 
+        :width: 800px
+
+.. |I2| image:: img/docu.todo.list.prettygray.png 
+        :width: 800px
+
+.. |I3| image:: img/docu.todo.list.plaincolor.png 
+        :width: 800px
+
+.. |I4| image:: img/docu.todo.list.plaingray.png 
+        :width: 800px
+
+=========== ================================================
+ Rendering   Parameters
+----------- ------------------------------------------------
+  |I1|       **PrettyPrint** = true, **WithColor** = true
+  |I2|       **PrettyPrint** = true, **WithColor** = false
+  |I3|       **PrettyPrint** = false, **WithColor** = true
+  |I4|       **PrettyPrint** = false, **WithColor** = false
+=========== ================================================
+
