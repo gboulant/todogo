@@ -28,5 +28,5 @@ Legend: ○ todo  ▶ doing  ● done
 Want to discover? Have a look to the user documentation:
 
 * [User guide](doc/talks/talk01.01.userguide.rst)
-* [Getting started](doc/talks/talk01.02.gettingstrated.rst)
+* [Getting started](doc/talks/talk01.02.gettingstarted.rst)
 * [Basic design](doc/talks/talk01.03.basicdesign.rst)
