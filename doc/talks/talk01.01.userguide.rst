@@ -38,14 +38,14 @@ personal todo list from a shell terminal:
 Creating tasks - ``new``
 ========================
 
-For creating a new task:
+To create a new task:
 
 .. code:: shell
 
    $ todo new -t "Write the documentation of todogo"
     1 [2019-Sep-07] ○ : Write the documentation of todogo
 
-The todo task is created with usage index 1. You may complete your
+The todo task is created with the usage index 1. You may complete your
 todo list:
 
 .. code:: shell
@@ -56,14 +56,14 @@ todo list:
    $ todo new -t "Create a beautiful web site for todogo"
     3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
 
-Each task is assigned a usage index (1,2,3) to refer to them with the
-command line (no mouse to click)
+Each task is assigned a usage index (1,2,3) which you refer to with
+the command line.
 
 ============================
 Listing the tasks - ``list``
 ============================
 
-Then you can have a look on the whole todo list:
+Then you can have a look at the whole todo list:
 
 .. code:: shell
 
@@ -76,7 +76,7 @@ Then you can have a look on the whole todo list:
    Legend: ○ todo  ▶ doing  ● done
    
 
-The listing display for each task:
+The listing displays for each task:
 
 * The usage index (1,2,3, ...)
 * The date of creation
@@ -88,8 +88,8 @@ Task on board - ``board``
 =========================
 
 *"This week you plan to work on the documentation (task 1) and the web
-site (task 3)"*, then you can star these tasks by putting them on the
-board:
+site (task 3)"*, then you can pinpoint these tasks by putting them on
+the board:
 
 .. code:: shell
    
@@ -151,7 +151,7 @@ You achieved the task 1:
    $ todo status -n 1
     1 [2019-Sep-07] ● : Write the documentation of todogo
 
-You can now get rid of this task from the board:
+You can now erase this task from the board:
 
 .. code:: shell
 
@@ -181,9 +181,9 @@ on the board:
 Archiving tasks - ``archive``
 =============================
 
-If you register and then finish a lot of tasks, they could accumulate
-in your todo list, with increasing indeces. A good practice is then to
-archive the done tasks:
+If you register and then finish a lot of tasks, they could be
+accumulating in your todo list, with increasing indeces. A good
+practice is then to archive the done tasks:
 
 .. code:: shell
 
@@ -242,11 +242,11 @@ When created, a task is characterized by:
 Index life cycle:
   
 * The global index (GID) is unique and invariant ever. It is defined
-  as a concatenation of a date flag YYYYMMDD and a sha1 of the task
+  as a concatenation of a date flag YYYYMMDD and a sha1 of the task's
   metadata.
 * The usage index (UID) is unique and invariant as long as the
   task is in the journal
-* Once a task is move from the journal to the archive, its usage index
+* Once a task is moved from the journal to the archive, its usage index
   is released and can be reused for a new task.
 
 ================
@@ -282,7 +282,7 @@ attributed to this newly created task:
    can refer to reasonably short indeces when typing your command
    line. Even if there is no maximum limit for indeces, the normal
    usage (i.e. if you achieve your tasks and archive them when
-   finished) is to play whith indeces between 1 (the starting index
+   finished) is to play whith indeces from 1 (the starting index
    value) to 20 or 30.
 
 ================
@@ -335,8 +335,8 @@ its status to the previous one in the life cycle (the status "doing"):
 Organizing the tasks - ``board``
 ================================
 
-As with all todo list, the tasks accumulate in the journal as they
-came out of your brain:
+As with all todo list, the tasks are accumulating in the journal as
+they come out of your brain:
 
 .. code:: shell
 
@@ -357,7 +357,7 @@ came out of your brain:
    
    Legend: ○ todo  ▶ doing  ● done
 
-The board is a good practice to focus on some tasks:
+The board is a good mean to focus on the important ones:
 
 .. code::
 
@@ -443,9 +443,9 @@ representation of the tasks with the option ``-t`` of the command
 
    Legend: ○ todo  ▶ doing  ● done
 
-Note that there is no limit in the depth of the tree relashionship but
-it is a good practice to have 2 or 3 levels maximum (one level only in
-this example).
+Note that there is no limit to the depth of the tree relashionship but
+it is a good practice to have a maximum of 2 or 3 levels (one level
+only in this example).
    
 ==================================
 Organizing the tasks - ``context``
@@ -459,11 +459,11 @@ don't want to mix them up with my job todo list"*.
 
 todogo defines the concept of **context** to manage this situation. A
 context is a named workspace where the journal of tasks is
-stored. When you start using todo, a defaut context is created
-automatically, but you can create manually as many contexts as you
+stored. When you start using todo, a default context is automatically
+created, but you can manually create as many contexts as you
 need, and then switch between these contexts.
 
-The contexts are managed using the command ``config``:
+The contexts are managed using the ``config`` command:
 
 .. code:: shell
 
@@ -501,7 +501,7 @@ Creating a new context with the name ``sport``:
 
    Legend: ● active context
 
-The context sport is automatically set as the active context. The todo
+The ``sport`` context is automatically set as the active context. The todo
 list of this new created context is empty and ready to register your
 sport todo list:
 
@@ -575,13 +575,12 @@ Annoting a task - ``note``
 ==========================
 
 Sometimes, you need to complete a task description with some
-additional pieces of information.
+additional information.
 
 todogo defines the concept of **note** to manage this
 situation. Technically speaking, a note is a plain text file
-associated to a task and that you can edit to put information in
-it. These files are stored in the workspace associated to the
-context.
+associated with a task, and you can edit this file to put information
+in. These files are stored in the workspace associated with the context.
 
 Let's go back to the sport context:
 
@@ -595,7 +594,7 @@ Let's go back to the sport context:
 
    Legend: ○ todo  ▶ doing  ● done
 
-And add some details concerning the inscription form (task 3):
+And add some details regarding the inscription form (task 3):
 
 .. code:: shell
 
@@ -603,10 +602,10 @@ And add some details concerning the inscription form (task 3):
    The note of the task 3 can be edited in file:
    /home/guillaume/.config/galuma/todogo/sport/notes/201909073921949778.rst
 
-A text file is created in the sport context workspace with a base name
-created from the task global id (GID). Todogo does not provide the
-function to edit this file, and you may choose your prefered editor to
-write the content:
+A text file is created in the sport context workspace with a filename
+based on the task global id (GID). Todogo does not provide the
+function to edit this file, and you may choose your favourite editor
+to write the content:
 
 .. code:: shell
 
@@ -615,10 +614,10 @@ write the content:
 .. note:: **Note**: this limitation is applied on purpose, due to the
    requirement to not use any external sofware program from
    todogo. The main reason is that the external software programs
-   could be not installed on you host. Personnaly I would prefer to
-   choose my prefered editor (``vi`` of course), and creating a
-   parameter in the todogo configuration for that is too much job for
-   very low benefit.
+   could be unavailable on your host. Personnaly I would rather choose
+   my favourite editor (``vi`` of course), and creating a parameter in
+   the todogo configuration for that is too much effort for very low
+   benefit.
 
 ==========================
 Annoting a task - ``note``
@@ -697,10 +696,13 @@ program can be printed using:
    
    Legend: * active context
 
-* The configuration is stored in a directory whose path is hard coded
+Some specifications:
+
+* The configuration is stored in a directory which path is hard coded
   in todogo as: ``$HOME/.config/galume/todogo``.
-* This directory is created at first todo execution if not exists.
-* The configuration file is ``config.json`` at the root of the
+* This directory is created while first executing todo if it does not
+  already exist.
+* The configuration filename is ``config.json`` at the root of the
   configuration directory.
 
 ===============================
@@ -712,8 +714,8 @@ To keep in mind
 
 * Apart for the management of the contexts (create, remove, select),
   there is no todo command to edit the configuration. If you need to
-  modify the configuration, you should directly edit the configuration
-  file ``config.json`` (it is a command line tool, no?)
+  modify the configuration, you have to directly edit the configuration
+  file ``config.json`` (it is a command line tool, right?)
 * The default location path of a context with name ``<mycontext>`` is
   ``<configdir>/<mycontext>``, i.e. a subdirectory of the
   configuration folder. But you may choose any path for a context when
@@ -736,7 +738,7 @@ Good practice
    $ git commit -m "Initial import"
    $ git push # if you have defined a remote repository
 
-The usage of a remote git repository can be usefull:
+The use of a remote git repository can be helpfull:
 
 * It could be considered as a backup of your data
 * You may synchronize your todo lists on all your computers
@@ -747,7 +749,7 @@ The usage of a remote git repository can be usefull:
 Configuring Todogo - ``config``
 ===============================
 
-Let's have a look into the configuration file ``$HOME/.config/galuma/todogo/config.json``:
+Let's have a look at the configuration file ``$HOME/.config/galuma/todogo/config.json``:
 
 .. code:: json
 
@@ -774,7 +776,7 @@ Let's have a look into the configuration file ``$HOME/.config/galuma/todogo/conf
        }
    }
 
-The parameters that you may change:
+The parameters that can be modified are:
 
 * ``DefaultCommand``: the default command when you execute ``todo``
   with no arguments
@@ -815,16 +817,16 @@ Rendering parameters
 Exporting tasks in a pdf file
 =============================
 
-For printing the todo list on paper, it could be convenient to create
-a pdf file from the listing. The output of the command ``todo list``
-can be saved either in a text plain file:
+To print the todo list on paper, it could be convenient to save the
+listing into a pdf file. The output of the ``todo list`` command can
+be saved either in a plain text file:
 
 .. code:: shell
 
    $ todo list -t -f todo.txt
    The todo list has been printed in the txt file: todo.txt
 
-Or in a pdf file (just by changing the output file extension):   
+Or in a pdf file (just by changing the output file extension):
 
 .. code:: shell
 
@@ -838,11 +840,9 @@ Or in a pdf file (just by changing the output file extension):
    requierment to not use external programs. The pdf output is created
    here using the ``cupsfilter`` program, a low level program which is
    installed on most linux systems.
-	    
 
 .. raw:: html
 
    <p align="center">
    <img height="360px" src="img/docu.todo.list.exportpdf.png">
    </p>
-

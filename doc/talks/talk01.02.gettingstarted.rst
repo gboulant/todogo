@@ -15,7 +15,7 @@ Download the source and install todogo
 The todogo application (``todo`` program) is written with the langage
 go (https://golang.org). You first need to install go and basic
 development tools (git, make). You are supposed here to be sudoers or
-to be able to make this software programs installed on your hosts:
+to be able to have this software programs installed on your host:
 
 .. code:: shell
 
@@ -34,8 +34,8 @@ program:
    $ make test
    $ sudo make install
 
-This last command install the executable program ``todo`` in the
-``$PREFIX/bin`` where PREFIX default to ``/usr/local``.
+This last command installs the executable program ``todo`` in the
+directory ``$PREFIX/bin`` where PREFIX default to ``/usr/local``.
 
 If you need to install todogo in another folder, replace with:
 
@@ -68,8 +68,8 @@ test the minimal software configuration required to work with todogo:
        cd todogo && make install
 
 
-If you save the content in a file with name ``Dockerfile``, then you
-can build the image using the command:
+If you save the content in a file named ``Dockerfile``, then you can
+build the image using the command:
 
 .. code:: shell
 
