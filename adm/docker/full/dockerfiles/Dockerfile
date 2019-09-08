@@ -33,7 +33,7 @@ WORKDIR /home/$USER
 
 RUN git config --global credential.helper cache && \
     git config --global credential.https://github.com.username $USER && \
-    git clone https://github.com/gboulant/todogo.git && \
-    cd todogo && make install
+    git clone https://gitlab.galuma.net/guiboule/todogo.git && \
+    cd todogo && sudo make install
     
 VOLUME  ["/home"]

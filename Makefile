@@ -27,7 +27,7 @@ test:
 clean:
 	rm -f ./todo ./demo
 	find . -name "*~" -o -name "out.*" | xargs rm -f
-	rm -rf ./pkg ./bin ./doc/api
+	rm -rf ./pkg ./bin
 
 edit:
 	GOPATH=${GOPATH} code .
@@ -44,3 +44,13 @@ docbuild: doc/api
 docview: docbuild
 	@echo "Open the link http://localhost:6060/doc/api/data.html"
 	@GOPATH=${GOPATH} godoc --http=:6060 -goroot=.
+
+
+dochtml:
+	make -C doc/talks
+
+docclean:
+	rm -rf doc/api
+	make -C doc/talks clean
+
+clean-all: clean docclean

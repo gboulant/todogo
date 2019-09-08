@@ -67,3 +67,29 @@ test the minimal software configuration required to work with todogo:
    RUN git clone https://gitlab.galuma.net/guiboule/todogo.git && \
        cd todogo && make install
 
+
+If you save the content in a file with name ``Dockerfile``, then you
+can build the image using the command:
+
+.. code:: shell
+
+   $ docker build -f Dockerfile -t todogoimg .
+
+Then run the tests using:
+
+.. code:: shell
+
+   $ docker run --rm -it todogoimg make -C todogo test
+
+And display the todogo config with:
+
+.. code:: shell
+
+   $ docker run --rm -it todogoimg todo config -i
+
+Finally, you can delete the image with:
+
+.. code:: shell
+
+   $ docker image rm todogoimg
+
