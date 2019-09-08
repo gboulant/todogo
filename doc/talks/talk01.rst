@@ -335,3 +335,152 @@ its status to the previous one in the life cycle (the status "doing"):
    $ todo status -p 4
     4 [2019-Sep-07] ▶ : Write the documentation of todogo
 
+================================
+Organizing the tasks - ``board``
+================================
+
+As with all todo list, the tasks accumulate in the journal as they
+came out of your brain:
+
+.. code:: shell
+
+   $ todo list
+
+    1 [2019-Sep-07] ▶ : Make it possible to have children tasks associated to a task
+    2 [2019-Sep-07] ▶ : Write the unit tests of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    4 [2019-Sep-07] ● : Write the documentation of todogo
+    5 [2019-Sep-07] ○ : Push a clone of the repository on github
+    6 [2019-Sep-07] ● : Create a dockerfile of the todogo application
+    7 [2019-Sep-07] ▶ : Write the conceptual design of the dingo application
+    8 [2019-Sep-07] ▶ : Setup the technical environment for the dingo application
+    9 [2019-Sep-07] ○ : Phone IT center to get a new PC
+   10 [2019-Sep-07] ○ : Book an hotel for the workshop in Melun
+   11 [2019-Sep-07] ○ : Write a prototype of dingo to validate the design
+   12 [2019-Sep-07] ○ : Write a project proposition to get a budget for dingo
+
+Legend: ○ todo  ▶ doing  ● done
+
+The board is a good practice to focus on some tasks:
+
+.. code::
+
+   $ todo board
+
+    2 [2019-Sep-07] ▶ : Write the unit tests of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+   10 [2019-Sep-07] ○ : Book an hotel for the workshop in Melun
+
+   Legend: ○ todo  ▶ doing  ● done
+
+================================
+Organizing the tasks - ``child``
+================================
+
+Grouping tasks with a parent task
+=================================
+
+All the tasks are in the same bag, but:
+
+* The tasks 1,2,3,4,5,6 concern the todogo project,
+* While 7,8,11,12 concern another project dingo,
+* And 9,10 are administrative tasks.
+
+A point of view is to consider these tasks as sub-tasks of
+macro-tasks: todogo, dingo, admin.
+
+todogo defines the concept of **child** task to manage this
+situation. You create three new tasks:
+
+.. code:: shell
+
+   $ todo new -t "TODOGO: project todogo"
+   13 [2019-Sep-07] ○ : TODOGO: project todogo
+
+   $ todo new -t "DINGO: project dingo"
+   14 [2019-Sep-07] ○ : DINGO: project dingo
+
+   $ todo new -t "ADMIN: administrative tasks"
+   15 [2019-Sep-07] ○ : ADMIN: administrative tasks
+
+Then, you can declare the previous tasks as child tasks of these newly
+created tasks:
+
+.. code:: shell
+
+   $ todo child -p 13 -c 1,2,3,4,5,6
+   $ todo child -p 14 -c 7,11,12
+   $ todo child -p 15 -c 9,10
+
+================================
+Organizing the tasks - ``child``
+================================
+
+Listing the tree representation
+===============================
+
+The child-parent relashionship can be used to print a tree
+representation of the tasks with the option ``-t`` of the command
+``list``:
+
+.. code:: shell
+
+   $ todo list -t
+
+   13 [2019-Sep-07] ○ : TODOGO: project todogo
+    └─ 1 [2019-Sep-07] ▶ : Make it possible to have children tasks associated to a task
+    └─ 2 [2019-Sep-07] ▶ : Write the unit tests of todogo
+    └─ 3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    └─ 4 [2019-Sep-07] ● : Write the documentation of todogo
+    └─ 5 [2019-Sep-07] ○ : Push a clone of the repository on github
+    └─ 6 [2019-Sep-07] ● : Create a dockerfile of the todogo application
+    
+   14 [2019-Sep-07] ○ : DINGO: project dingo
+    └─ 7 [2019-Sep-07] ▶ : Write the conceptual design of the dingo application
+    └─ 8 [2019-Sep-07] ▶ : Setup the technical environment for the dingo application
+    └─11 [2019-Sep-07] ○ : Write a prototype of dingo to validate the design
+    └─12 [2019-Sep-07] ○ : Write a project proposition to get a budget for dingo
+    
+   15 [2019-Sep-07] ○ : ADMIN: administrative tasks
+    └─ 9 [2019-Sep-07] ○ : Phone IT center to get a new PC
+    └─10 [2019-Sep-07] ○ : Book an hotel for the workshop in Melun
+
+   Legend: ○ todo  ▶ doing  ● done
+
+Note that there is no limit in the depth of the tree relashionship but
+it is a good practice to have 2 or 3 levels maximum (one level only in
+this example).
+   
+==================================
+Organizing the tasks - ``context``
+==================================
+
+Different workspaces for different contexts
+===========================================
+
+*"I would need to manage a todo list for my sport association, but I
+don't want to mix them up with my job todo list"*.
+
+todogo defines the concept of **context** to manage this situation. A
+context is a named workspace where the journal of tasks is
+stored. When you start using todo, a defaut context is created
+automatically, but you can create manually as many contexts as you
+need, and then switch between these contexts.
+
+The contexts are managed using the command ``config``:
+
+.. code:: shell
+
+   $ todo config
+
+     default : /home/guillaume/.config/galuma/todogo/default
+   ● demo    : /home/guillaume/.config/galuma/todogo/demo
+
+   Legend: ● active context
+
+The listing indicates that:
+
+* Two contexts (default and demo) are defined in my configuration
+* The paths specify the workspace directories of the contexts   
+* The context demo is the current active context
+
