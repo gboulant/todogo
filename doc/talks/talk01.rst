@@ -88,3 +88,60 @@ The listing display for each task:
 * The date of creation
 * The status [todo, doing, done] (see the legend)
 * The description text
+
+=========================
+Task on board - ``board``
+=========================
+
+*"This week you plan to work on the documentation (task 1) and the web
+site (task 3)"*, then you can star these tasks by putting them on the
+board:
+
+.. code:: shell
+   
+   $ todo board -a 1,3
+   Task of index 1 has been added on board
+   Task of index 3 has been added on board
+
+And list the tasks on board to focus on the actuality:
+
+.. code:: shell
+
+   $ todo board
+   
+    1 [2019-Sep-07] ○ : Write the documentation of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    
+   Legend: ○ todo  ▶ doing  ● done
+   
+============================
+Task life cycle - ``status``
+============================
+
+*"You start by writing some documentation and want to point that the
+task is in progress"*, then you specify that you jump to the next
+status of this task 1 (the status *doing*):
+
+.. code:: shell
+
+   $ todo status -n 1
+    1 [2019-Sep-07] ▶ : Write the documentation of todogo
+
+Then the board indicates:
+
+.. code:: shell
+
+   $ todo board
+
+    1 [2019-Sep-07] ▶ : Write the documentation of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+    
+   Legend: ○ todo  ▶ doing  ● done
+   
+Note that todogo defines three possible status:
+
+``○ todo``: the task is registered and is waiting to be done
+
+``▶ doing``: the task is started and is in progress
+
+``● done``: the task is achieved
