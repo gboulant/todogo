@@ -11,3 +11,12 @@ test: build
 clean:
 	rm -f *~ dockerfiles/*~
 	./dkclean.sh
+
+minibuild:
+	docker build -f dockerfiles/Dockerfile.minimalist -t todogomin .
+
+minitest:
+	docker run --rm -it todogomin make -C todogo test
+
+minidemo:
+	docker run --rm -it todogomin todo config -i
