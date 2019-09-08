@@ -1,7 +1,3 @@
-:title: TODOGO - Quick start guide
-:author: Guillaume Boulant (gboulant@gmail.com)
-:date: Sept. 2019
-:description: Quick start guide for TODOGO
    
 ========
 Overview
