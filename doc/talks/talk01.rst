@@ -2,7 +2,8 @@
 :Author: Guillaume Boulant (gboulant@gmail.com)
 :Date: Sept. 2019
 :Description: Quick start guide for TODOGO
-   
+:Email: gboulant@gmail.com
+
 -------------
 
 .. raw:: html
@@ -13,7 +14,6 @@
    </p>
    </div>
 
-   
 ========
 Overview
 ========
@@ -358,8 +358,8 @@ came out of your brain:
    10 [2019-Sep-07] ○ : Book an hotel for the workshop in Melun
    11 [2019-Sep-07] ○ : Write a prototype of dingo to validate the design
    12 [2019-Sep-07] ○ : Write a project proposition to get a budget for dingo
-
-Legend: ○ todo  ▶ doing  ● done
+   
+   Legend: ○ todo  ▶ doing  ● done
 
 The board is a good practice to focus on some tasks:
 
@@ -387,9 +387,9 @@ All the tasks are in the same bag, but:
 * And 9,10 are administrative tasks.
 
 A point of view is to consider these tasks as sub-tasks of
-macro-tasks: todogo, dingo, admin.
+macro-tasks refering to todogo, dingo and admin.
 
-todogo defines the concept of **child** task to manage this
+Todogo defines the concept of **child** task to manage this
 situation. You create three new tasks:
 
 .. code:: shell
