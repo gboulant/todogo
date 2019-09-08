@@ -491,7 +491,7 @@ Creating a new context with the name ``sport``:
      default : /home/guillaume/.config/galuma/todogo/default
      demo    : /home/guillaume/.config/galuma/todogo/demo
    ● sport   : /home/guillaume/.config/galuma/todogo/sport
-
+   
    Legend: ● active context
 
 The context sport is automatically set as the active context. The todo
@@ -516,7 +516,7 @@ sport todo list:
     1 [2019-Sep-07] ○ : Buy a new equipement
     2 [2019-Sep-07] ○ : Make the medical certificate
     3 [2019-Sep-07] ○ : Fill in the inscription form
-
+   
    Legend: ○ todo  ▶ doing  ● done
 
 ==================================
@@ -530,25 +530,25 @@ Selecting an active context
 with the demo context, and you currently point to the sport context:
 
 .. code:: shell
-
+   
    $ todo config
-
+   
      default : /home/guillaume/.config/galuma/todogo/default
      demo    : /home/guillaume/.config/galuma/todogo/demo
    ● sport   : /home/guillaume/.config/galuma/todogo/sport
-
+   
    Legend: ● active context
 
 Then you just have to switch back to the demo context:
 
 .. code:: shell
-
+   
    $ todo config -s demo
-
+   
      default : /home/guillaume/.config/galuma/todogo/default
    ● demo    : /home/guillaume/.config/galuma/todogo/demo
      sport   : /home/guillaume/.config/galuma/todogo/sport
-
+   
    Legend: ● active context
 
 And retrieve your job todo list:
@@ -560,7 +560,7 @@ And retrieve your job todo list:
     2 [2019-Sep-07] ▶ : Write the unit tests of todogo
     3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
    10 [2019-Sep-07] ○ : Book an hotel for the workshop in Melun
-
+   
    Legend: ○ todo  ▶ doing  ● done
 
 

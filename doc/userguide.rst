@@ -8,6 +8,16 @@ TODO: User guide
    2 [2019-Sep-07] ○ : Write the unit tests of todogo
    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
 
+-------------
+
+.. raw:: html
+
+   <div align="center" style="padding-top: 20%; padding-left:20%; padding-right:20%">
+   <h1 style="margin-left: 0; margin-right: 0">02 - Getting started</h1>
+   <p style="margin-left: 0; margin-right: 0">
+   </p>
+   </div>
+
 
 The todo application can help you to create and manage a personal todo
 list. For creating a new task::
