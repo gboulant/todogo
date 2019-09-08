@@ -1,7 +1,7 @@
-:title: TODOGO - Quick start guide
-:author: Guillaume Boulant (gboulant@gmail.com)
-:date: Sept. 2019
-:description: Quick start guide for TODOGO
+:Title: TODOGO - Quick start guide
+:Author: Guillaume Boulant (gboulant@gmail.com)
+:Date: Sept. 2019
+:Description: Quick start guide for TODOGO
    
 -------------
 
@@ -65,3 +65,26 @@ todo list:
 Each task is assigned a usage index (1,2,3) to refer to them with the
 command line (no mouse to click)
 
+============================
+Listing the tasks - ``list``
+============================
+
+Then you can have a look on the whole todo list:
+
+.. code:: shell
+
+   $ todo list
+   
+    1 [2019-Sep-07] ○ : Write the documentation of todogo
+    2 [2019-Sep-07] ○ : Write the unit tests of todogo
+    3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
+
+   Legend: ○ todo  ▶ doing  ● done
+   
+
+The listing display for each task:
+
+* The usage index (1,2,3, ...)
+* The date of creation
+* The status [todo, doing, done] (see the legend)
+* The description text
