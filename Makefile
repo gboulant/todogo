@@ -14,6 +14,8 @@ build:
 
 install: build
 	install ./bin/todo ${PREFIX}/bin/.
+	install ./adm/todo-git.sh ${PREFIX}/bin/.
+	install ./adm/todo-sync.sh ${PREFIX}/bin/.
 	install ./adm/todo-completion.sh ${PREFIX}/etc/.
 
 test:
