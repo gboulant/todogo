@@ -35,7 +35,8 @@ func (journal *TaskJournal) New(text string) *Task {
 	}
 	task.initGlobalIndex()
 	journal.TaskList.append(task)
-	return &task
+	ptask, _ := journal.GetTask(task.UIndex)
+	return ptask
 }
 
 // Add adds the given task to this journal
