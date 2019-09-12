@@ -151,7 +151,7 @@ You achieved the task 1:
    $ todo status -n 1
     1 [2019-Sep-07] ● : Write the documentation of todogo
 
-You can now erase this task from the board:
+You can now remove this task from the board:
 
 .. code:: shell
 
@@ -719,7 +719,7 @@ To keep in mind
 * The default location path of a context with name ``<mycontext>`` is
   ``<configdir>/<mycontext>``, i.e. a subdirectory of the
   configuration folder. But you may choose any path for a context when
-  you create one (see options of the command ``todo config -n``.
+  you create one (see options of the command ``todo config -n``).
 
 Good practice
 =============
