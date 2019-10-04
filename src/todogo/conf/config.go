@@ -17,6 +17,9 @@ const (
 
 	// defaultContextName is the name (and relative path) of the default context
 	defaultContextName = "default"
+
+	// DefaultIndicatorsTemplate is the template for the task indicators string
+	DefaultIndicatorsTemplate = "{{.Date}}:{{.Note}}{{.Board}}"
 )
 
 var (
@@ -51,6 +54,8 @@ type Parameters struct {
 	PrettyPrint bool
 	// WithColor indicates wether the printable string should be with color or not
 	WithColor bool
+	// Indicators is the template of indicators of a task string representation
+	Indicators string
 }
 
 func (parameters Parameters) String() string {
@@ -86,6 +91,7 @@ func defaultConfig() Config {
 			DefaultCommand: "board",
 			PrettyPrint:    true,
 			WithColor:      true,
+			Indicators:     DefaultIndicatorsTemplate,
 		},
 	}
 	return config

@@ -1,11 +1,14 @@
 package data
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
+	"text/template"
+	"todogo/conf"
 	"todogo/core"
 )
 
@@ -100,10 +103,53 @@ func (task Task) String() string {
 // OnelineString returns a string representation of this task on one signe line.
 // This shouldbe used for a pretty presentation of task lists.
 func (task Task) OnelineString() string {
-	dtlabel := datelabel(task.Timestamp)
-	template := "%2d [%s] %s : %s"
-	s := fmt.Sprintf(template, task.UIndex, dtlabel, task.Status.String(), task.Description)
+	t := "%2d [%s] %s : %s"
+	s := fmt.Sprintf(t, task.UIndex, task.getTaskIndicators(), task.Status.String(), task.Description)
 	return s
+}
+
+func (task Task) getTaskIndicators() string {
+	cfg, _ := conf.GetConfig() // unused to test the err, we can not arrive here in case of config error
+	indicatorsTemplate := cfg.Parameters.Indicators
+	if indicatorsTemplate == "" {
+		indicatorsTemplate = conf.DefaultIndicatorsTemplate
+	}
+	tmpl, err := template.New("indicators").Parse(indicatorsTemplate)
+	if err != nil {
+		tmpl, _ = template.New("indicators").Parse(conf.DefaultIndicatorsTemplate)
+	}
+
+	dtlabel := datelabel(task.Timestamp)
+
+	var hasNote string
+	if task.NotePath != "" {
+		hasNote = "n"
+	} else {
+		hasNote = "-"
+	}
+
+	var onBoard string
+	if task.OnBoard {
+		onBoard = "b"
+	} else {
+		onBoard = "-"
+	}
+
+	indicators := struct {
+		Date  string
+		Note  string
+		Board string
+	}{
+		Date:  dtlabel,
+		Note:  hasNote,
+		Board: onBoard,
+	}
+	var buffer bytes.Buffer
+	err = tmpl.Execute(&buffer, indicators)
+	if err != nil {
+		return "no indicators"
+	}
+	return buffer.String()
 }
 
 // JSONString returns a json string representation of this task
