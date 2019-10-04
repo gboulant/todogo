@@ -19,7 +19,7 @@ const (
 	defaultContextName = "default"
 
 	// DefaultIndicatorsTemplate is the template for the task indicators string
-	DefaultIndicatorsTemplate = "{{.Date}}:{{.Note}}{{.Board}}"
+	DefaultIndicatorsTemplate = "[{{.Date}}:{{.Note}}{{.Board}}]"
 )
 
 var (

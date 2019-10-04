@@ -103,7 +103,7 @@ func (task Task) String() string {
 // OnelineString returns a string representation of this task on one signe line.
 // This shouldbe used for a pretty presentation of task lists.
 func (task Task) OnelineString() string {
-	t := "%2d [%s] %s : %s"
+	t := "%2d %s %s : %s"
 	s := fmt.Sprintf(t, task.UIndex, task.getTaskIndicators(), task.Status.String(), task.Description)
 	return s
 }
@@ -111,9 +111,6 @@ func (task Task) OnelineString() string {
 func (task Task) getTaskIndicators() string {
 	cfg, _ := conf.GetConfig() // unused to test the err, we can not arrive here in case of config error
 	indicatorsTemplate := cfg.Parameters.Indicators
-	if indicatorsTemplate == "" {
-		indicatorsTemplate = conf.DefaultIndicatorsTemplate
-	}
 	tmpl, err := template.New("indicators").Parse(indicatorsTemplate)
 	if err != nil {
 		tmpl, _ = template.New("indicators").Parse(conf.DefaultIndicatorsTemplate)

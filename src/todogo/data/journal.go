@@ -304,6 +304,45 @@ func (journal *TaskJournal) GetOrCreateNoteFile(uindex TaskID) (string, error) {
 	return journal.getNoteFile(uindex, true)
 }
 
+// ListNotes returns the list of all task notes as a single concatenated string
+func (journal TaskJournal) ListNotes() string {
+	listNotes := ""
+	var notepath string
+	for _, task := range journal.TaskList {
+
+		if task.NotePath == "" {
+			continue
+		}
+
+		if filepath.IsAbs(task.NotePath) {
+			notepath = task.NotePath
+		} else {
+			rootdir := filepath.Dir(journal.File())
+			notepath = filepath.Join(rootdir, task.NotePath)
+		}
+		content, err := core.LoadString(notepath)
+		if err != nil {
+			listNotes += err.Error() + "\n"
+		} else {
+			listNotes += content + "\n"
+		}
+	}
+	return listNotes
+}
+
+// Report returns a complete report including (1) the task tree, (2) the task
+// board and (3) the notes contents
+func (journal TaskJournal) Report() string {
+	report := journal.Tree()
+	report += "\n------------------------------------------------------\n"
+	report += "Board:\n"
+	report += journal.ListWithFilter(TaskFilterOnBoard)
+	report += "\n------------------------------------------------------\n"
+	report += "Notes:\n\n"
+	report += journal.ListNotes()
+	return report
+}
+
 // =========================================================================
 // Helper functions for testing purpose
 
