@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
+	"todogo/conf"
 	"todogo/core"
 )
-
-var app = core.CommandParser{}
 
 var commands = core.CommandList{
 	{Name: "new", Description: "Create a new task", Parser: commandNew},
@@ -20,8 +20,18 @@ var commands = core.CommandList{
 	{Name: "config", Description: "Manage de configuration", Parser: commandConfig},
 }
 
+func getConfig() *conf.Config {
+	cfg, err := conf.GetConfig()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return cfg
+}
+
 func main() {
-	app.Init("todo", commands)
+	app := core.NewCommandParser("todo", commands)
+	app.SetDefaultCmdOptions(strings.Fields(getConfig().Parameters.DefaultCommand))
 	err := app.ArgParse()
 	if err != nil {
 		fmt.Println(err)

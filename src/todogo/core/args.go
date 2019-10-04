@@ -27,14 +27,31 @@ type CommandList []Command
 // subcommand of the program)
 //of
 type CommandParser struct {
-	progname    string
+	// progname is the name of the executable program
+	progname string
+	// defaultopt is the list of command line options to consider if no option is given
+	defaultopt []string
+	// commandList is the list of available commands
 	commandList CommandList
 }
 
 // Init initialises a CommandParser object
 func (commandParser *CommandParser) Init(progname string, commandList CommandList) {
 	commandParser.progname = progname
+	commandParser.defaultopt = []string{}
 	commandParser.commandList = commandList
+}
+
+// NewCommandParser creates and initialise a CommandParser
+func NewCommandParser(progname string, commandList CommandList) CommandParser {
+	commandParser := CommandParser{}
+	commandParser.Init(progname, commandList)
+	return commandParser
+}
+
+// SetDefaultCmdOptions specifies the default command line options
+func (commandParser *CommandParser) SetDefaultCmdOptions(cmdopt []string) {
+	commandParser.defaultopt = cmdopt
 }
 
 // commandNames returns a list of possible command names (from commandList)
@@ -74,23 +91,35 @@ var helpOptions = []string{"-help", "--help", "-h"}
 
 // ArgParse parses the command line arguments and executed the requested command
 func (commandParser CommandParser) ArgParse() error {
+	var args []string
 
 	if len(os.Args) < 2 {
-		commandParser.usage()
-		msg := fmt.Sprintf("ERR: you should specify a command in: %s", commandParser.commandNames())
-		return errors.New(msg)
+		if len(commandParser.defaultopt) > 0 {
+			args = make([]string, 1+len(commandParser.defaultopt))
+			args[0] = os.Args[0]
+			for i := 1; i <= len(commandParser.defaultopt); i++ {
+				args[i] = commandParser.defaultopt[i-1]
+			}
+		} else {
+			commandParser.usage()
+			msg := fmt.Sprintf("ERR: you should specify a command in: %s", commandParser.commandNames())
+			return errors.New(msg)
+		}
+	} else {
+		args = os.Args
 	}
-	if contains(helpOptions, os.Args[1]) {
+
+	if contains(helpOptions, args[1]) {
 		commandParser.usage()
 		return nil
 	}
 
-	commandName := os.Args[1]
+	commandName := args[1]
 	command, err := commandParser.getCommand(commandName)
 	if err != nil {
 		return err
 	}
-	return command.Parser(commandName, os.Args[2:])
+	return command.Parser(commandName, args[2:])
 }
 
 // -----------------------------------------------------------------------
