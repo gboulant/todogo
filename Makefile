@@ -12,12 +12,15 @@ demo: demobuild
 build:
 	GOPATH=${GOPATH} go install todogo/prog/todo
 
-install: build
+install: build ${PREFIX}/bin ${PREFIX}/etc
 	install ./bin/todo ${PREFIX}/bin/.
 	install ./adm/todo-git.sh ${PREFIX}/bin/.
 	install ./adm/todo-sync.sh ${PREFIX}/bin/.
 	install ./adm/todo-cfg.sh ${PREFIX}/bin/.
 	install ./adm/todo-completion.sh ${PREFIX}/etc/.
+
+${PREFIX}/%:
+	@mkdir -p $@
 
 test:
 	@echo "=== Testing the package todogo/core ..."
