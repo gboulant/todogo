@@ -9,7 +9,7 @@ import (
 )
 
 var commands = core.CommandList{
-	{Name: "new", Description: "Create a new task", Parser: commandNew},
+	{Name: "add", Description: "Create a new task", Parser: commandNew},
 	{Name: "list", Description: "Print the list of tasks", Parser: commandList},
 	{Name: "status", Description: "Change the status of tasks", Parser: commandStatus},
 	{Name: "board", Description: "Append/Remove tasks on/from the board", Parser: commandBoard},

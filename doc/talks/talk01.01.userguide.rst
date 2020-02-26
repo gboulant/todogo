@@ -22,7 +22,7 @@ personal todo list from a shell terminal:
 
    With <command> in:
 
-   * new       : Create a new task
+   * add       : Create a new task
    * list      : Print the list of tasks
    * status    : Change the status of tasks
    * board     : Append/Remove tasks on/from the board
@@ -35,14 +35,14 @@ personal todo list from a shell terminal:
    For a description of possible options, try: todo <command> --help
    
 ========================
-Creating tasks - ``new``
+Creating tasks - ``add``
 ========================
 
 To create a new task:
 
 .. code:: shell
 
-   $ todo new -t "Write the documentation of todogo"
+   $ todo add -t "Write the documentation of todogo"
     1 [2019-Sep-07] ○ : Write the documentation of todogo
 
 The todo task is created with the usage index 1. You may complete your
@@ -50,10 +50,10 @@ todo list:
 
 .. code:: shell
 
-   $ todo new -t "Write the unit tests of todogo"
+   $ todo add -t "Write the unit tests of todogo"
     2 [2019-Sep-07] ○ : Write the unit tests of todogo
 
-   $ todo new -t "Create a beautiful web site for todogo"
+   $ todo add -t "Create a beautiful web site for todogo"
     3 [2019-Sep-07] ○ : Create a beautiful web site for todogo
 
 Each task is assigned a usage index (1,2,3) which you refer to with
@@ -260,7 +260,7 @@ We create a new task:
 
 .. code::
 
-   $ todo new -t "Make it possible to have children tasks associated to a task"
+   $ todo add -t "Make it possible to have children tasks associated to a task"
     1 [2019-Sep-07] ○ : Make it possible to have children tasks associated to a task
 
 Note that the usage index 1, previously attributed to the
@@ -390,13 +390,13 @@ situation. You create three new tasks:
 
 .. code:: shell
 
-   $ todo new -t "TODOGO: project todogo"
+   $ todo add -t "TODOGO: project todogo"
    13 [2019-Sep-07] ○ : TODOGO: project todogo
 
-   $ todo new -t "DINGO: project dingo"
+   $ todo add -t "DINGO: project dingo"
    14 [2019-Sep-07] ○ : DINGO: project dingo
 
-   $ todo new -t "ADMIN: administrative tasks"
+   $ todo add -t "ADMIN: administrative tasks"
    15 [2019-Sep-07] ○ : ADMIN: administrative tasks
 
 Then, you can declare the previous tasks as child tasks of these newly
@@ -511,11 +511,11 @@ sport todo list:
 
    No tasks. Go have a drink
 
-   $ todo new -t "Buy a new equipement"
+   $ todo add -t "Buy a new equipement"
     1 [2019-Sep-07] ○ : Buy a new equipement
-   $ todo new -t "Make the medical certificate"
+   $ todo add -t "Make the medical certificate"
     2 [2019-Sep-07] ○ : Make the medical certificate
-   $ todo new -t "Fill in the inscription form"
+   $ todo add -t "Fill in the inscription form"
     3 [2019-Sep-07] ○ : Fill in the inscription form
 
    $ todo list
