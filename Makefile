@@ -34,6 +34,7 @@ clean:
 	rm -f ./todo ./demo
 	find . -name "*~" -o -name "out.*" | xargs rm -f
 	rm -rf ./pkg ./bin
+	make -C doc/talks clean
 
 edit:
 	GOPATH=${GOPATH} code .
