@@ -4,12 +4,14 @@ package data
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 	"todogo/conf"
 	"todogo/core"
+	"unicode/utf8"
 )
 
 // TaskJournal defines the structure to manage a task journal. A tasks journal
@@ -189,6 +191,8 @@ func (journal *TaskJournal) Save() error {
 // Implementation of the stringable function (function creating string
 // representations of a journal)
 
+const notasks = "No tasks. Go have a drink"
+
 // ListWithFilter returns a string representation of the list of tasks that
 // satisfy the given filter (tasks are included in the list if the taskFilter
 // returns true).
@@ -203,7 +207,7 @@ func (journal TaskJournal) ListWithFilter(taskFilter TaskFilter) string {
 		}
 	}
 	if nlisted == 0 {
-		s += fmt.Sprint("No tasks. Go have a drink\n\n")
+		s += fmt.Sprintf("%s\n\n", notasks)
 	} else {
 		s += fmt.Sprintf("\nLegend: %s  %s  %s\n", StatusTodo.legend(), StatusDoing.legend(), StatusDone.legend())
 	}
@@ -218,7 +222,7 @@ func (journal TaskJournal) List() string {
 // Tree returns a string representation of the tree structure of tasks (parent relations)
 func (journal TaskJournal) Tree() string {
 	if len(journal.TaskList) == 0 {
-		return fmt.Sprint("\nNo tasks. Go have a drink\n\n")
+		return fmt.Sprintf("\n%s\n\n", notasks)
 	}
 	s := ""
 	tree := TreeString(journal.TaskList)
@@ -273,14 +277,18 @@ func (journal *TaskJournal) getNoteFile(uindex TaskID, create bool) (string, err
 
 	if !exists {
 		err := core.CheckAndMakeDir(filepath.Dir(notepath))
-		file, err := os.Create(notepath)
-		defer file.Close()
 		if err != nil {
 			return notepath, err
 		}
+		file, err := os.Create(notepath)
+		if err != nil {
+			return notepath, err
+		}
+		defer file.Close()
 		title := fmt.Sprintf("%.2d - %s", task.UIndex, task.Description)
+		size := utf8.RuneCountInString(title) // nb runes, and not nb bytes (because of accents)
 		line := ""
-		for i := 0; i < len(title); i++ {
+		for i := 0; i < size; i++ {
 			line += "="
 		}
 		file.WriteString(fmt.Sprintf("%s\n", title))
@@ -302,6 +310,32 @@ func (journal *TaskJournal) GetNoteFile(uindex TaskID) (string, error) {
 // creates it and return the absolute path to this note file.
 func (journal *TaskJournal) GetOrCreateNoteFile(uindex TaskID) (string, error) {
 	return journal.getNoteFile(uindex, true)
+}
+
+func (journal *TaskJournal) DeleteNoteFile(uindex TaskID) error {
+	task, err := journal.GetTask(uindex)
+	if err != nil {
+		return err
+	}
+
+	if task.NotePath == "" {
+		return errors.New("the task has no associated note")
+	}
+
+	var notepath string
+	if filepath.IsAbs(task.NotePath) {
+		notepath = task.NotePath
+	} else {
+		rootdir := filepath.Dir(journal.File())
+		notepath = filepath.Join(rootdir, task.NotePath)
+	}
+
+	err = os.Remove(notepath)
+	if err != nil {
+		return err
+	}
+	task.NotePath = ""
+	return nil
 }
 
 // ListNotes returns the list of all task notes as a single concatenated string

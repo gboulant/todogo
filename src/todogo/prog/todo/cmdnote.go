@@ -27,6 +27,9 @@ func commandNote(cmdname string, args []string) error {
 	if viewIndex != 0 {
 		return viewNote(viewIndex)
 	}
+	if delIndex != 0 {
+		return deleteNote(delIndex)
+	}
 
 	flagset.Usage()
 	return errors.New("ERR: Choose an option (see usage)")
@@ -67,4 +70,17 @@ func viewNote(index data.TaskID) error {
 		fmt.Println(content)
 	}
 	return err
+}
+
+func deleteNote(index data.TaskID) error {
+	journal, err := getActiveJournal()
+	if err != nil {
+		return err
+	}
+
+	err = journal.DeleteNoteFile(index)
+	if err != nil {
+		return err
+	}
+	return journal.Save()
 }
