@@ -14,17 +14,17 @@ talk01-srcfiles=\
 	talk01.03.basicdesign.rst
 
 talk01.html: ${talk01-srcfiles} css/pandoc.css
-	$(RST2HTML) ${talk01-srcfiles} -o $@
+	@$(RST2HTML) ${talk01-srcfiles} -o $@
 
 view: talk01.html
-	firefox $<
+	@firefox $<
 
 clean:
-	rm -f *.html *.pdf
-	find . -name "*~" | xargs rm -f
+	@rm -f *.html *.pdf
+	@find . -name "*~" | xargs rm -f
 
 talk01.pdf: ${talk01-srcfiles}
-	$(RST2PDF) ${talk01-srcfiles} -o $@
+	@$(RST2PDF) ${talk01-srcfiles} -o $@
 
 html: talk01.html
 pdf: talk01.pdf

@@ -1,63 +1,33 @@
-GOPATH=$(shell echo $$GOPATH:`pwd`)
+
+all: test
+
+test:
+	@make -C src test
+
+clean:
+	@make -C src clean
+	@make -C doc/talks clean
+
+dochtml:
+	make -C doc/talks
+
+# ------------------------------------------
+# For installing the todo command and additionnal helper scripts
+# (completion, git, synchro, etc) outside of the go bin directory, use
+# the following targets (after setting the PREFIX value to specify the
+# install root directory)
+
 PREFIX ?= /usr/local
-
-all: build
-
-demobuild:
-	GOPATH=${GOPATH} go build todogo/prog/demo
-
-demo: demobuild
-	./demo
-
-build:
-	GOPATH=${GOPATH} go install todogo/prog/todo
+${PREFIX}/%:
+	@mkdir -p $@
 
 install: build ${PREFIX}/bin ${PREFIX}/etc
-	install ./bin/todo ${PREFIX}/bin/.
+	install ./src/cmds/todo/todo ${PREFIX}/bin/.
 	install ./adm/todo-git.sh ${PREFIX}/bin/.
 	install ./adm/todo-sync.sh ${PREFIX}/bin/.
 	install ./adm/todo-cfg.sh ${PREFIX}/bin/.
 	install ./adm/todo-completion.sh ${PREFIX}/etc/.
 
-${PREFIX}/%:
-	@mkdir -p $@
+build:
+	@make -C src/cmds/todo build
 
-test:
-	@echo "=== Testing the package todogo/core ..."
-	@GOPATH=${GOPATH} go test -v todogo/core
-	@echo "=== Testing the package todogo/conf ..."
-	@GOPATH=${GOPATH} go test -v todogo/conf
-	@echo "=== Testing the package todogo/data ..."
-	@GOPATH=${GOPATH} go test -v todogo/data
-
-clean:
-	rm -f ./todo ./demo
-	find . -name "*~" -o -name "out.*" | xargs rm -f
-	rm -rf ./pkg ./bin
-	make -C doc/talks clean
-
-edit:
-	GOPATH=${GOPATH} code .
-
-
-doc/api:
-	@mkdir doc/api
-
-docbuild: doc/api
-	@GOPATH=${GOPATH} godoc -html todogo/core > ./doc/api/core.html
-	@GOPATH=${GOPATH} godoc -html todogo/conf > ./doc/api/conf.html
-	@GOPATH=${GOPATH} godoc -html todogo/data > ./doc/api/data.html
-
-docview: docbuild
-	@echo "Open the link http://localhost:6060/doc/api/data.html"
-	@GOPATH=${GOPATH} godoc --http=:6060 -goroot=.
-
-
-dochtml:
-	make -C doc/talks
-
-docclean:
-	rm -rf doc/api
-	make -C doc/talks clean
-
-clean-all: clean docclean

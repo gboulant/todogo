@@ -2,12 +2,12 @@ The todogo application is yet another todo list manager written with
 the go langage. The project was initiated as a training exercice to
 learn the basic features of the go langage. The resulting application
 can be used of course but could not fit your own way to manage todo
-list.
+lists.
 
-Todogo is a command line application, that consists in a single
-executable program (todo) interacting with a local database made of
-json files. It comes with no dependency (only the standard go packages
-are required).
+The todo program is a command line application, that consists in a
+single executable program (todo) interacting with a local database
+made of json files. It comes with no dependency (only the standard go
+packages are required).
 
 A typical output looks like:
 
