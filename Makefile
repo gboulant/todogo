@@ -11,22 +11,25 @@ clean:
 dochtml:
 	make -C doc/talks
 
+install:
+	@make -C src install
+
 # ------------------------------------------
 # For installing the todo command and additionnal helper scripts
 # (completion, git, synchro, etc) outside of the go bin directory, use
 # the following targets (after setting the PREFIX value to specify the
-# install root directory)
+# deploy root directory)
 
 PREFIX ?= /usr/local
 ${PREFIX}/%:
 	@mkdir -p $@
 
-install: build ${PREFIX}/bin ${PREFIX}/etc
-	install ./src/cmds/todo/todo ${PREFIX}/bin/.
-	install ./adm/todo-git.sh ${PREFIX}/bin/.
-	install ./adm/todo-sync.sh ${PREFIX}/bin/.
-	install ./adm/todo-cfg.sh ${PREFIX}/bin/.
-	install ./adm/todo-completion.sh ${PREFIX}/etc/.
+deploy: build ${PREFIX}/bin ${PREFIX}/etc
+	@install ./src/cmds/todo/todo ${PREFIX}/bin/.
+	@install ./adm/todo-git.sh ${PREFIX}/bin/.
+	@install ./adm/todo-sync.sh ${PREFIX}/bin/.
+	@install ./adm/todo-cfg.sh ${PREFIX}/bin/.
+	@install ./adm/todo-completion.sh ${PREFIX}/etc/.
 
 build:
 	@make -C src/cmds/todo build
