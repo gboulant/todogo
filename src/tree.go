@@ -62,21 +62,30 @@ func TreeString(tasks TaskArray) string {
 	nodeString = func(taskID TaskID, tab string) string {
 		idx := tasks.indexFromUID(taskID)
 		s := fmt.Sprintf("%s%s\n", tab, tasks[idx].String())
+
+		// If the task is a main task (i.e. a task with no parent, which
+		// can be determine by testing the current tabulation), then we
+		// add a groupsep for a better interline between groups of tasks
+		if tab == tabstart {
+			s = groupsep + s
+		}
+
+		// Is there children tasks?
 		_, exists := tree[taskID]
 		if !exists {
-			// This task has no child
+			// This task has no child => stop the recurcive loop
 			return s
 		}
 		children := tree[taskID]
 		if len(children) == 0 {
 			return s
 		}
+		// It is a project task (i.e. a task with no parent AND with
+		// children tasks), then the tabulation of children should start
+		// with a startIndent. Once more, it can be determine by testing
+		// the current tabulation
 		if tab == tabstart {
-			// It is a project task (task with no parent AND with children
-			// tasks), then (1) the tabulation of children is starting with a
-			// startIndent and (2) we add a groupsep to the main task.
 			tab = startIndent + tabchild
-			s = groupsep + s
 		} else {
 			tab = tabindent + tab
 		}
