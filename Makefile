@@ -7,6 +7,7 @@ test:
 clean:
 	@make -C src clean
 	@make -C doc/talks clean
+	@find . -name "*~" | xargs rm -f
 
 dochtml:
 	make -C doc/talks
